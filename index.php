@@ -41,56 +41,54 @@ $totalSlots = $availableCount + $occupiedCount;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
     body {
-        background: linear-gradient(135deg, #e0f2fe 0%, #60a5fa 100%);
+        background-color: #212A31;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #b08968; /* Light brown text */
+        color: #D3D9D4;
         margin: 0;
     }
 
     .glass {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(24px) saturate(170%) contrast(97%) brightness(115%);
-        -webkit-backdrop-filter: blur(24px) saturate(170%) contrast(97%) brightness(115%);
+        background: rgba(46, 57, 68, 0.65); /* #2E3944 with transparency */
+        backdrop-filter: blur(18px);
         border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        border: 1px solid #748D92;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        color: #D3D9D4;
     }
 
     .navbar {
-        background: rgba(37, 99, 235, 0.85); /* blue */
-        backdrop-filter: blur(18px);
-        padding: 0.5rem 1.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.13);
+        background: #2E3944;
+        padding: 0.75rem 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .navbar-brand {
-        color: #ffffff;
+        color: #D3D9D4;
         font-weight: 700;
         font-size: 1.25rem;
     }
 
     .btn-group a {
-        color: #ffffff;
-        font-weight: 600;
+        color: #D3D9D4;
+        background-color: #124E66;
         border-radius: 12px;
         padding: 0.5rem 1rem;
-        background: rgba(59, 130, 246, 0.13);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid #748D92;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .btn-group a:hover {
-        background: rgba(59, 130, 246, 0.3);
-        color: #fff;
+        background-color: #748D92;
+        color: #212A31;
     }
 
     .card-box {
         padding: 20px;
         border-radius: 14px;
         text-align: center;
-        background: rgba(255, 255, 255, 0.1);
-        color:rgb(0, 0, 0);
+        background-color: #2E3944;
+        color: #D3D9D4;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
     }
 
@@ -100,59 +98,56 @@ $totalSlots = $availableCount + $occupiedCount;
     }
 
     .bg-primary {
-        background: linear-gradient(135deg, #2563eb 60%, #60a5fa 100%);
-        color: #ffffff;
+        background-color: #124E66;
+        color: #D3D9D4;
     }
 
     .bg-warning {
-        background: linear-gradient(135deg, #fcd34d 60%, #fde68a 100%);
-        color: #1e293b;
+        background-color: #748D92;
+        color: #212A31;
     }
 
     .bg-success {
-        background: linear-gradient(135deg, #10b981 60%, #6ee7b7 100%);
-        color: #1e293b;
-    }
-
-    .bg-efficiency {
-        background: linear-gradient(135deg, #3b82f6 60%, #93c5fd 100%);
-        color: #ffffff;
+        background-color: #2E3944;
+        color: #D3D9D4;
     }
 
     .glass-table-container {
         margin-top: 20px;
         padding: 20px;
         border-radius: 14px;
-        background: rgba(255, 255, 255, 0.07);
-        backdrop-filter: blur(16px);
+        background: rgba(46, 57, 68, 0.55);
+        backdrop-filter: blur(12px);
+        border: 1px solid #748D92;
         box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
-        border: 1px solid rgba(255, 255, 255, 0.09);
     }
 
     table.table {
-        color: #b08968;
+        color: #D3D9D4;
     }
 
     thead.table-light th {
-        background: rgba(59, 130, 246, 0.13);
-        color: #ffffff;
+        background-color: #2E3944;
+        color: #D3D9D4;
     }
 
     tbody tr:hover {
-        background: rgba(59, 130, 246, 0.07);
+        background-color: #124E66;
     }
 
     .status-available {
-        color: #22d3ee;
+        color: #92ffc0; /* light greenish accent if needed */
         font-weight: 700;
     }
 
     .status-occupied {
-        color: #ef4444;
+        color: #f87171;
         font-weight: 700;
     }
 
     .progress-bar {
+        background-color: #124E66;
+        color: #D3D9D4;
         font-weight: 600;
         font-size: 0.9rem;
         line-height: 30px;
@@ -170,6 +165,7 @@ $totalSlots = $availableCount + $occupiedCount;
         }
     }
 </style>
+
 
 </head>
 <body>
@@ -221,7 +217,6 @@ $totalSlots = $availableCount + $occupiedCount;
     </div>
      <!-- meanu -->
      <div class="d-flex justify-content-end mt-3 gap-2">
-            <a href="show_QR.php" class="btn btn-success">Show QR</a>
             <a href="show_receipt.php" class="btn btn-success">Show Receipt</a>
             <a href="add_new_slot.php" class="btn btn-success">Add New Slot</a>
             <a href="add_vehicle.php" class="btn btn-success">Add Vehicle</a>

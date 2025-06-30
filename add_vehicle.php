@@ -60,19 +60,97 @@ $availableSlots = $conn->query("SELECT slot_id, slot_name FROM parking_slots WHE
     <title>Add Vehicle Entry</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .form-container {
-            max-width: 650px;
-            margin: auto;
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            margin-top: 60px;
-        }
-    </style>
+    body {
+        background-color: #212A31;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #D3D9D4;
+        margin: 0;
+    }
+
+    .form-container {
+        max-width: 650px;
+        margin: 60px auto;
+        background: rgba(46, 57, 68, 0.7); /* #2E3944 with glass effect */
+        padding: 40px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid #748D92;
+        color: #D3D9D4;
+    }
+
+    h3 {
+        color: #D3D9D4;
+        font-weight: 700;
+    }
+
+    label.form-label {
+        color: #D3D9D4;
+        font-weight: 500;
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #2E3944;
+        border: 1px solid #748D92;
+        color: #D3D9D4;
+    }
+
+    .form-control::placeholder {
+        color: #9CA3AF; /* light gray for placeholder */
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #124E66;
+        border-color: #124E66;
+        color: #fff;
+        box-shadow: 0 0 0 0.15rem rgba(18, 78, 102, 0.4);
+    }
+
+    .btn-primary {
+        background-color: #124E66;
+        border: none;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #0e3b4d;
+    }
+
+    .btn-secondary {
+        background-color: transparent;
+        color: #D3D9D4;
+        border: 1px solid #748D92;
+    }
+
+    .btn-secondary:hover {
+        background-color: #124E66;
+        color: #fff;
+        border-color: #124E66;
+    }
+
+    .alert-danger,
+    .alert-warning {
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .alert-danger {
+        background-color: #f87171;
+        color: #212A31;
+        border: none;
+    }
+
+    .alert-warning {
+        background-color: #fde68a;
+        color: #212A31;
+        border: none;
+    }
+</style>
+
 </head>
 <body>
 

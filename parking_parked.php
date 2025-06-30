@@ -30,31 +30,72 @@ function calculatePriceMeter($duration_hrs) {
     <title>Currently Parked Vehicles</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .table thead th {
-            background-color:rgba(12, 148, 55, 0.85);
-            color: white;
-        }
+    body {
+        background-color: #212A31;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #D3D9D4;
+        margin: 0;
+    }
+
+    .header-section {
+        padding: 40px 0 20px 0;
+        text-align: center;
+        color: #D3D9D4;
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
+
+    .table-responsive {
+        background: rgba(46, 57, 68, 0.65); /* #2E3944 glass effect */
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    table.table {
+        color: #D3D9D4;
+    }
+
+    .table thead th {
+        background-color: #124E66;
+        color: #D3D9D4;
+        border-bottom: 2px solid #748D92;
+    }
+
+    tbody tr:hover {
+        background-color: #2E3944;
+    }
+
+    .badge.bg-success {
+        background-color: #748D92;
+        color: #212A31;
+    }
+
+    .btn-back {
+        margin-top: 20px;
+        border: 1px solid #748D92;
+        color: #D3D9D4;
+        background-color: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background-color: #124E66;
+        color: #fff;
+        border-color: #124E66;
+    }
+
+    @media (max-width: 575.98px) {
         .header-section {
-            padding: 40px 0 20px 0;
-            text-align: center;
-            color: #0d6efd;
-            font-weight: 700;
-            font-size: 2.5rem;
+            font-size: 1.8rem;
+            padding: 30px 0 10px 0;
         }
-        .btn-back {
-            margin-top: 20px;
-        }
-        @media (max-width: 575.98px) {
-            .header-section {
-                font-size: 1.8rem;
-                padding: 30px 0 10px 0;
-            }
-        }
-    </style>
+    }
+</style>
+
 </head>
 <body>
 <div class="container">

@@ -50,16 +50,87 @@ if (!$vehicles) {
     <title>Parking History</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
+    body {
+        background-color: #212A31;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #D3D9D4;
+        margin: 0;
+    }
+
+    .container {
+        margin-top: 50px;
+    }
+
+    h2 {
+        color: #D3D9D4;
+        font-weight: 700;
+    }
+
+    .card {
+        background: rgba(46, 57, 68, 0.7); /* #2E3944 glass effect */
+        border-radius: 14px;
+        border: 1px solid #748D92;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .table {
+        color: #D3D9D4;
+    }
+
+    .table thead {
+        background-color: #124E66;
+        color: #D3D9D4;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    tbody tr:hover {
+        background-color: rgba(116, 141, 146, 0.25); /* #748D92 light hover */
+    }
+
+    .badge.bg-success {
+        background-color: #6ee7b7; /* optional green for In Lot */
+        color: #1e293b;
+    }
+
+    .badge.bg-secondary {
+        background-color: #748D92;
+        color: #212A31;
+    }
+
+    .btn-outline-danger {
+        border-color: #f87171;
+        color: #f87171;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #f87171;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background-color: transparent;
+        color: #D3D9D4;
+        border: 1px solid #748D92;
+    }
+
+    .btn-secondary:hover {
+        background-color: #124E66;
+        color: #fff;
+        border-color: #124E66;
+    }
+
+    @media (max-width: 575.98px) {
+        h2 {
+            font-size: 1.5rem;
         }
-        .container {
-            margin-top: 50px;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-        }
-    </style>
+    }
+</style>
+
 </head>
 <body>
 

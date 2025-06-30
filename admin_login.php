@@ -32,105 +32,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Hamro Easy Parking - Admin Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    /* Background and overlay */
-    body {
-      background-image: url('img/andrey-kirov-i7qsJX0Ym44-unsplash.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: sans-serif;
-      position: relative;
-      margin: 0;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.4); /* dark overlay */
-      z-index: -1;
-      backdrop-filter: brightness(0.7);
-    }
+  body {
+    background-color: #212A31;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #D3D9D4;
+  }
 
-    /* Apple Glass / frosted glass container */
-    .login-container {
-      background: rgba(255, 255, 255, 0.15); /* semi-transparent */
-      border-radius: 15px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(10px); /* the blur */
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      width: 100%;
-      max-width: 420px;
-      padding: 2.5rem 2rem;
-      color: #fff;
-      text-align: center;
-    }
+  .login-container {
+    background: rgba(46, 57, 68, 0.7); /* #2E3944 glass style */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    border: 1px solid #748D92;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 420px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    color: #D3D9D4;
+    text-align: center;
+  }
 
-    .login-title {
-      font-weight: 700;
-      font-size: 2rem;
-      color: #e0e0e0;
-      margin-bottom: 2rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
+  .login-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #D3D9D4;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
 
-    /* Form styles */
-    .form-label {
-      font-weight: 600;
-      color: #f0f0f0;
-    }
-    .form-control {
-      background: rgba(255, 255, 255, 0.25);
-      border: none;
-      color: white;
-      box-shadow: none;
-      border-radius: 8px;
-      transition: background 0.3s ease;
-    }
-    .form-control:focus {
-      background: rgba(255, 255, 255, 0.4);
-      color: #111;
-      outline: none;
-      box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
-    }
+  .form-label {
+    font-weight: 500;
+    color: #D3D9D4;
+  }
 
-    /* Button style */
-    .btn-primary {
-      background: #357abd;
-      border: none;
-      font-weight: 600;
-      padding: 12px;
-      border-radius: 10px;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 4px 15px rgba(53, 122, 189, 0.5);
-    }
-    .btn-primary:hover {
-      background: #2a5d9f;
-      box-shadow: 0 6px 20px rgba(42, 93, 159, 0.7);
-    }
+  .form-control {
+    background-color: #2E3944;
+    border: 1px solid #748D92;
+    border-radius: 8px;
+    color: #D3D9D4;
+  }
 
-    /* Error alert */
-    .alert {
-      font-size: 0.9rem;
-      background: rgba(255, 0, 0, 0.2);
-      color: #ffdddd;
-      border: none;
-      box-shadow: none;
-    }
+  .form-control::placeholder {
+    color: #9CA3AF;
+  }
 
-    /* Footer */
-    .footer-text {
-      margin-top: 1.5rem;
-      font-size: 0.85rem;
-      color: #ccc;
-      text-shadow: 0 0 2px rgba(0,0,0,0.5);
-    }
-  </style>
+  .form-control:focus {
+    background-color: #124E66;
+    color: #fff;
+    border-color: #124E66;
+    box-shadow: 0 0 5px rgba(18, 78, 102, 0.5);
+  }
+
+  .btn-primary {
+    background-color: #124E66;
+    border: none;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 15px rgba(18, 78, 102, 0.5);
+  }
+
+  .btn-primary:hover {
+    background-color: #0e3b4d;
+    box-shadow: 0 6px 20px rgba(14, 59, 77, 0.6);
+  }
+
+  .alert {
+    font-size: 0.9rem;
+    background: rgba(248, 113, 113, 0.2);
+    color: #F87171;
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    border-radius: 10px;
+  }
+
+  .footer-text {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: #748D92;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+  }
+</style>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body>
   <div class="login-container shadow">
