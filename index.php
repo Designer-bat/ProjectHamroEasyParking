@@ -40,116 +40,137 @@ $totalSlots = $availableCount + $occupiedCount;
     <title>Parking Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background: linear-gradient(135deg, #1e293b, #334155 80%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #f3f4f6;
-            margin: 0;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(24px) saturate(170%) contrast(97%) brightness(115%);
-            -webkit-backdrop-filter: blur(24px) saturate(170%) contrast(97%) brightness(115%);
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.11);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
-        }
+    body {
+        background: linear-gradient(135deg, #e0f2fe 0%, #60a5fa 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #b08968; /* Light brown text */
+        margin: 0;
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(24px) saturate(170%) contrast(97%) brightness(115%);
+        -webkit-backdrop-filter: blur(24px) saturate(170%) contrast(97%) brightness(115%);
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .navbar {
+        background: rgba(37, 99, 235, 0.85); /* blue */
+        backdrop-filter: blur(18px);
+        padding: 0.5rem 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.13);
+    }
+
+    .navbar-brand {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .btn-group a {
+        color: #ffffff;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 0.5rem 1rem;
+        background: rgba(59, 130, 246, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn-group a:hover {
+        background: rgba(59, 130, 246, 0.3);
+        color: #fff;
+    }
+
+    .card-box {
+        padding: 20px;
+        border-radius: 14px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.1);
+        color:rgb(0, 0, 0);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+    }
+
+    .card-box .display-4 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .bg-primary {
+        background: linear-gradient(135deg, #2563eb 60%, #60a5fa 100%);
+        color: #ffffff;
+    }
+
+    .bg-warning {
+        background: linear-gradient(135deg, #fcd34d 60%, #fde68a 100%);
+        color: #1e293b;
+    }
+
+    .bg-success {
+        background: linear-gradient(135deg, #10b981 60%, #6ee7b7 100%);
+        color: #1e293b;
+    }
+
+    .bg-efficiency {
+        background: linear-gradient(135deg, #3b82f6 60%, #93c5fd 100%);
+        color: #ffffff;
+    }
+
+    .glass-table-container {
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    table.table {
+        color: #b08968;
+    }
+
+    thead.table-light th {
+        background: rgba(59, 130, 246, 0.13);
+        color: #ffffff;
+    }
+
+    tbody tr:hover {
+        background: rgba(59, 130, 246, 0.07);
+    }
+
+    .status-available {
+        color: #22d3ee;
+        font-weight: 700;
+    }
+
+    .status-occupied {
+        color: #ef4444;
+        font-weight: 700;
+    }
+
+    .progress-bar {
+        font-weight: 600;
+        font-size: 0.9rem;
+        line-height: 30px;
+        text-align: center;
+    }
+
+    @media (max-width: 768px) {
         .navbar {
-            background: rgba(30, 64, 175, 0.8);
-            backdrop-filter: blur(18px);
-            padding: 0.5rem 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.13);
+            flex-direction: column;
+            align-items: flex-start;
         }
-        .navbar-brand {
-            color: #f1f5f9;
-            font-weight: 700;
-            font-size: 1.25rem;
+
+        .btn-group {
+            flex-wrap: wrap;
         }
-        .btn-group a {
-            color: #f1f5f9;
-            font-weight: 600;
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
-            background: rgba(71, 85, 105, 0.13);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            text-decoration: none;
-            box-shadow: 0 4px 10px rgba(71, 85, 105, 0.09);
-        }
-        .btn-group a:hover {
-            background: rgba(59, 130, 246, 0.18);
-            color: #fff;
-        }
-        .card-box {
-            padding: 20px;
-            border-radius: 14px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.07);
-            color: #f9fafb;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
-        }
-        .card-box .display-4 {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        .bg-primary {
-            background: linear-gradient(135deg, #2563eb 60%, #60a5fa 100%);
-            color: #f9fafb;
-        }
-        .bg-warning {
-            background: linear-gradient(135deg, #fbbf24 60%, #fde68a 100%);
-            color: #1e293b;
-        }
-        .bg-success {
-            background: linear-gradient(135deg, #10b981 60%, #6ee7b7 100%);
-            color: #1e293b;
-        }
-        .bg-efficiency {
-            background: linear-gradient(135deg, #8b5cf6 60%, #c4b5fd 100%);
-            color: #f9fafb;
-        }
-        .glass-table-container {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(16px);
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-        }
-        table.table {
-            color: #e5e7eb;
-        }
-        thead.table-light th {
-            background: rgba(71, 85, 105, 0.13);
-            color: #f9fafb;
-        }
-        tbody tr:hover {
-            background: rgba(59, 130, 246, 0.07);
-        }
-        .status-available {
-            color: #22d3ee;
-            font-weight: 700;
-        }
-        .status-occupied {
-            color: #f87171;
-            font-weight: 700;
-        }
-        .progress-bar {
-            font-weight: 600;
-            font-size: 0.9rem;
-            line-height: 30px;
-            text-align: center;
-        }
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .btn-group {
-                flex-wrap: wrap;
-            }
-        }
-    </style>
+    }
+</style>
+
 </head>
 <body>
 
