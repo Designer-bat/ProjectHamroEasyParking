@@ -1,177 +1,438 @@
 <?php
-session_start();
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "parking_system";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Database connection
+$conn = new mysqli("localhost", "root", "", "parking_system");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $slot_name = trim($_POST['slot_name']);
-    
-    if (empty($slot_name)) {
-        $error = "Please enter a slot name.";
-    } else {
-        $stmt = $conn->prepare("INSERT INTO parking_slots (slot_name, status) VALUES (?, 'Available')");
-        $stmt->bind_param("s", $slot_name);
+// Handle form submissions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle slot addition
+    if (isset($_POST['add_quantity'])) {
+        $quantity = intval($_POST['add_quantity']);
+        
+        if ($quantity > 0) {
+            // Get last slot ID from database
+            $result = $conn->query("SELECT slot_name FROM parking_slots ORDER BY slot_id DESC LIMIT 1");
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                preg_match('/\d+/', $row['slot_name'], $matches);
+                $lastNumber = isset($matches[0]) ? intval($matches[0]) : 0;
+            } else {
+                $lastNumber = 0; // If no slots exist yet
+            }
 
-        if ($stmt->execute()) {
-            $success = "New parking slot added successfully!";
+            // Insert new slots
+            for ($i = 1; $i <= $quantity; $i++) {
+                $newNumber = $lastNumber + $i;
+                $newSlotName = "S" . $newNumber;
+                $conn->query("INSERT INTO parking_slots (slot_name, status) VALUES ('$newSlotName', 'Available')");
+            }
+
+            $addMessage = "<div class='alert success'>$quantity new slot(s) added successfully!</div>";
         } else {
-            $error = "Error: " . $stmt->error;
+            $addMessage = "<div class='alert error'>Please enter a valid quantity for adding slots.</div>";
         }
-
-        $stmt->close();
+    }
+    
+    // Handle slot deletion
+    if (isset($_POST['delete_quantity'])) {
+        $quantity = intval($_POST['delete_quantity']);
+        
+        if ($quantity > 0) {
+            // Get total slots count
+            $result = $conn->query("SELECT COUNT(*) as total FROM parking_slots");
+            $row = $result->fetch_assoc();
+            $totalSlots = $row['total'];
+            
+            if ($quantity <= $totalSlots) {
+                // Delete the specified number of slots (starting from the highest IDs)
+                $conn->query("DELETE FROM parking_slots ORDER BY slot_id DESC LIMIT $quantity");
+                
+                $deleteMessage = "<div class='alert success'>$quantity slot(s) deleted successfully!</div>";
+            } else {
+                $deleteMessage = "<div class='alert error'>Cannot delete more slots than available ($totalSlots available).</div>";
+            }
+        } else {
+            $deleteMessage = "<div class='alert error'>Please enter a valid quantity for deleting slots.</div>";
+        }
     }
 }
 
-$conn->close();
+// Get current slot information
+$result = $conn->query("SELECT COUNT(*) as total, 
+                        SUM(CASE WHEN status = 'Available' THEN 1 ELSE 0 END) as available 
+                        FROM parking_slots");
+$slotData = $result->fetch_assoc();
+$totalSlots = $slotData['total'] ?? 0;
+$availableSlots = $slotData['available'] ?? 0;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add New Parking Slot</title>
-    <!-- Bootstrap CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Slot Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2c3e50;
+            --secondary-blue: #3498db;
+            --accent-blue: #1a6ca6;
+            --light-blue: #ecf0f1;
+            --white: #ffffff;
+            --black: #212529;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-blue) 0%, #d6e4f0 100%);
+            color: var(--black);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1 i {
+            color: var(--secondary-blue);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #a0c7e4;
+            font-weight: 400;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--secondary-blue);
+        }
+
+        .stat-title {
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .actions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--medium-gray);
+        }
+
+        .card-header i {
+            font-size: 1.8rem;
+            color: var(--secondary-blue);
+            background: rgba(52, 152, 219, 0.1);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .card-description {
+            color: var(--dark-gray);
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--medium-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--secondary-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--secondary-blue);
+            color: var(--white);
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--primary-blue);
+            border: 2px solid var(--medium-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--medium-gray);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--black);
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert i {
+            font-size: 1.3rem;
+        }
+
+        .success {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: #856404;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .actions-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
-<style>
-    body {
-        background-color: #212A31;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #D3D9D4;
-        margin: 0;
-    }
-
-    .card {
-        background: rgba(46, 57, 68, 0.75); /* #2E3944 glass effect */
-        border: 1px solid #748D92;
-        border-radius: 16px;
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-        color: #D3D9D4;
-    }
-
-    .card-title {
-        font-weight: 600;
-        font-size: 1.5rem;
-        color: #D3D9D4;
-    }
-
-    .form-label {
-        font-weight: 500;
-        color: #D3D9D4;
-    }
-
-    .form-control {
-        background-color: #2E3944;
-        border: 1px solid #748D92;
-        color: #D3D9D4;
-        border-radius: 8px;
-    }
-
-    .form-control::placeholder {
-        color: #9CA3AF;
-    }
-
-    .form-control:focus {
-        background-color: #124E66;
-        border-color: #124E66;
-        color: #fff;
-        box-shadow: 0 0 5px rgba(18, 78, 102, 0.6);
-    }
-
-    .btn-primary {
-        background-color: #124E66;
-        border: none;
-        font-weight: 600;
-        transition: 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background-color: #0e3b4d;
-    }
-
-    .btn-secondary {
-        background-color: transparent;
-        color: #D3D9D4;
-        border: 1px solid #748D92;
-    }
-
-    .btn-secondary:hover {
-        background-color: #124E66;
-        color: #fff;
-        border-color: #124E66;
-    }
-
-    .alert-danger {
-        background-color: rgba(248, 113, 113, 0.2);
-        color: #F87171;
-        border: 1px solid rgba(248, 113, 113, 0.4);
-        border-radius: 10px;
-    }
-
-    .alert-success {
-        background-color: rgba(34, 197, 94, 0.2);
-        color: #22c55e;
-        border: 1px solid rgba(34, 197, 94, 0.4);
-        border-radius: 10px;
-    }
-
-    .text-muted {
-        color: #748D92 !important;
-    }
-</style>
-
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title mb-4 text-center">Add New Parking Slot</h3>
-
-                    <!-- Alerts -->
-                    <?php if (!empty($error)) : ?>
-                        <div class="alert alert-danger" role="alert">
-                            <?= htmlspecialchars($error) ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($success)) : ?>
-                        <div class="alert alert-success" role="alert">
-                            <?= htmlspecialchars($success) ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Form -->
-                    <form method="post" action="">
-                        <div class="mb-3">
-                            <label for="slot_name" class="form-label">Slot Name</label>
-                            <input type="text" class="form-control" id="slot_name" name="slot_name" placeholder="Enter slot name (e.g., A1, B3)" required>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Add Slot</button>
-                    </form>
+<body>  
+        <div class="actions-container">
+            <div class="action-card">
+                <div class="card-header">
+                    <i class="fas fa-plus-circle"></i>
+                    <div>
+                        <h2 class="card-title">Add New Slots</h2>
+                        <p class="card-description">Add new parking slots to the system</p>
+                    </div>
                 </div>
+                
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="add_quantity">Number of slots to add</label>
+                        <input type="number" id="add_quantity" name="add_quantity" min="1" required>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Slots
+                        </button>
+                    </div>
+                    
+                    <?php if (isset($addMessage)) echo $addMessage; ?>
+                </form>
             </div>
-
-            <div class="text-center mt-3 text-muted">
-                <a href="index.php" class="btn btn-secondary">← Back to Dashboard</a>
+            
+            <div class="action-card">
+                <div class="card-header">
+                    <i class="fas fa-minus-circle"></i>
+                    <div>
+                        <h2 class="card-title">Delete Existing Slots</h2>
+                        <p class="card-description">Remove parking slots from the system</p>
+                    </div>
+                </div>
+                
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="delete_quantity">Number of slots to delete</label>
+                        <input type="number" id="delete_quantity" name="delete_quantity" min="1" required>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-trash-alt"></i> Delete Slots
+                        </button>
+                    </div>
+                    
+                    <?php if (isset($deleteMessage)) echo $deleteMessage; ?>
+                    
+                    <div class="alert warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Note: This will delete the most recently added slots first
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Bootstrap JS Bundle with Popper (optional for some components) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <a href="index.php" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
 </body>
 </html>

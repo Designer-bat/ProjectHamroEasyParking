@@ -39,171 +39,204 @@ $totalSlots = $availableCount + $occupiedCount;
 <head>
     <title>Parking Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-    body {
-        background-color: #212A31;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #D3D9D4;
-        margin: 0;
-    }
+        body {
+            background-color: #f5faff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+        }
 
-    .glass {
-        background: rgba(46, 57, 68, 0.65); /* #2E3944 with transparency */
-        backdrop-filter: blur(18px);
-        border-radius: 18px;
-        border: 1px solid #748D92;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        color: #D3D9D4;
-    }
-
-    .navbar {
-        background: #2E3944;
-        padding: 0.75rem 1.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .navbar-brand {
-        color: #D3D9D4;
-        font-weight: 700;
-        font-size: 1.25rem;
-    }
-
-    .btn-group a {
-        color: #D3D9D4;
-        background-color: #124E66;
-        border-radius: 12px;
-        padding: 0.5rem 1rem;
-        border: 1px solid #748D92;
-        text-decoration: none;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-group a:hover {
-        background-color: #748D92;
-        color: #212A31;
-    }
-
-    .card-box {
-        padding: 20px;
-        border-radius: 14px;
-        text-align: center;
-        background-color: #2E3944;
-        color: #D3D9D4;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
-    }
-
-    .card-box .display-4 {
-        font-size: 2rem;
-        font-weight: 700;
-    }
-
-    .bg-primary {
-        background-color: #124E66;
-        color: #D3D9D4;
-    }
-
-    .bg-warning {
-        background-color: #748D92;
-        color: #212A31;
-    }
-
-    .bg-success {
-        background-color: #2E3944;
-        color: #D3D9D4;
-    }
-
-    .glass-table-container {
-        margin-top: 20px;
-        padding: 20px;
-        border-radius: 14px;
-        background: rgba(46, 57, 68, 0.55);
-        backdrop-filter: blur(12px);
-        border: 1px solid #748D92;
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
-    }
-
-    table.table {
-        color: #D3D9D4;
-    }
-
-    thead.table-light th {
-        background-color: #2E3944;
-        color: #D3D9D4;
-    }
-
-    tbody tr:hover {
-        background-color: #124E66;
-    }
-
-    .status-available {
-        color: #92ffc0; /* light greenish accent if needed */
-        font-weight: 700;
-    }
-
-    .status-occupied {
-        color: #f87171;
-        font-weight: 700;
-    }
-
-    .progress-bar {
-        background-color: #124E66;
-        color: #D3D9D4;
-        font-weight: 600;
-        font-size: 0.9rem;
-        line-height: 30px;
-        text-align: center;
-    }
-
-    @media (max-width: 768px) {
-        .navbar {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 240px;
+            background-color: #1e3a8a;
+            padding: 20px 0;
+            display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            justify-content: space-between;
+            z-index: 1000;
+            color: white;
         }
 
-        .btn-group {
-            flex-wrap: wrap;
+        .sidebar .logo {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 20px;
         }
-    }
-</style>
 
+        .sidebar .logo span {
+            display: block;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
 
+        .sidebar .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .sidebar .nav-menu li a,
+        .sidebar .logout a {
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            padding: 12px 24px;
+            transition: background 0.3s;
+        }
+
+        .sidebar .nav-menu li a:hover,
+        .sidebar .logout a:hover {
+            background-color: #2563eb;
+        }
+
+        .sidebar .section-title {
+            margin: 10px 24px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #dbeafe;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 20px;
+        }
+        .navbar-brand {
+            color: black;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .card-box {
+            background-color: #eff6ff;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card-box:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-box .display-4 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .glass-table-container {
+            margin-top: 20px;
+        }
+
+        .slot-card {
+            background: white;
+            border-left: 5px solid #60a5fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .slot-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+        }
+
+        .slot-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+
+        .status-available {
+            color: #10b981;
+            background: #d1fae5;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-occupied {
+            color: #ef4444;
+            background: #fee2e2;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .slot-date {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .progress-bar {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        /* Icon styling */
+        .sidebar .icon {
+            width: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">HAMRO EASY PARKING</span>
-        <div class="btn-group">
-            <a href="add_vehicle.php">Vehicle Entry</a>
-            <a href="parking_parked.php">Vehicle Parked</a>
-            <a href="parking_exit.php">Vehicle Exit</a>
-            <a href="parking_history.php">Parking Records</a>
-            <a class="btn-danger" href="admin_login.php">Logout</a>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo">HAMRO EASY PARKING</div>
+    <ul class="nav-menu">
+        <li><a href="#"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
+        <li><a href="add_vehicle.php"><span class="icon"><i class="fas fa-car"></i></span> Vehicle Entry</a></li>
+        <li><a href="parking_parked.php"><span class="icon"><i class="fas fa-parking"></i></span> Vehicle Parked</a></li>
+        <li><a href="parking_exit.php"><span class="icon"><i class="fas fa-sign-out-alt"></i></span> Vehicle Exit</a></li>
+        <li><a href="parking_history.php"><span class="icon"><i class="fas fa-file-alt"></i></span> Parking Records</a></li>
+        <li><a href="show_receipt.php"><span class="icon"><i class="fas fa-receipt"></i></span> Receipt</a></li>
+        <li><a href="parking_history.php"><span class="icon"><i class="fas fa-history"></i></span> History</a></li>
+    </ul>
+    <div class="section-title">add slot & Data Deletion</div>
+    <ul class="nav-menu">
+        <li><a href="parking_history_delete.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete History</a></li>
+        <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Parking Slot</a></li>
+    </ul>
+    <div class="logout"><a href="admin_login.php"><span class="icon"><i class="fas fa-door-open"></i></span> Log Out</a></div>
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container mt-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card-box">Total Vehicles Today<div class="display-4"><?= $totalVehiclesToday ?></div></div></div>
+            <div class="col-md-3"><div class="card-box">Currently Parked<div class="display-4"><?= $currentParked ?></div></div></div>
+            <div class="col-md-3"><div class="card-box">Income Today<div class="display-4">₹<?= number_format($totalIncomeToday) ?></div></div></div>
+            <div class="col-md-3"><div class="card-box">Efficiency<div class="display-4"><?= round($parkingEfficiency, 2) ?>%</div></div></div>
         </div>
-    </div>
-</nav>
 
-<div class="container mt-4">
-    <h3 class="fw-bold">Dashboard</h3>
-
-    <div class="row g-3 my-3">
-        <div class="col-md-3"><div class="card-box bg-primary glass">Total Vehicles Today<div class="display-4"><?= $totalVehiclesToday ?></div></div></div>
-        <div class="col-md-3"><div class="card-box bg-warning glass">Currently Parked<div class="display-4"><?= $currentParked ?></div></div></div>
-        <div class="col-md-3"><div class="card-box bg-success glass">Income Today<div class="display-4">₹<?= number_format($totalIncomeToday) ?></div></div></div>
-        <div class="col-md-3"><div class="card-box bg-efficiency glass">Efficiency<div class="display-4"><?= round($parkingEfficiency, 2) ?>%</div></div></div>
-    </div>
-
-    <!-- Slot Usage Bar -->
-    <h5 class="mt-4 mb-2">Slot Usage Indicator</h5>
-    <div class="glass p-3 mb-4">
-        <div class="progress" style="height: 30px; background-color: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden;">
+        <h5 class="mt-4 mb-3">Slot Usage Indicator</h5>
+        <div class="progress mb-4" style="height: 30px; border-radius: 20px; overflow: hidden;">
             <div class="progress-bar bg-success"
                  role="progressbar"
                  style="width: <?= ($availableCount / $totalSlots) * 100 ?>%"
                  aria-valuenow="<?= $availableCount ?>"
                  aria-valuemin="0"
                  aria-valuemax="<?= $totalSlots ?>">
-                <?= $availableCount ?> Available
+                 <?= $availableCount ?> Available
             </div>
             <div class="progress-bar bg-danger"
                  role="progressbar"
@@ -211,43 +244,29 @@ $totalSlots = $availableCount + $occupiedCount;
                  aria-valuenow="<?= $occupiedCount ?>"
                  aria-valuemin="0"
                  aria-valuemax="<?= $totalSlots ?>">
-                <?= $occupiedCount ?> Occupied
+                 <?= $occupiedCount ?> Occupied
             </div>
         </div>
-    </div>
-     <!-- meanu -->
-     <div class="d-flex justify-content-end mt-3 gap-2">
-            <a href="show_receipt.php" class="btn btn-success">Show Receipt</a>
-            <a href="add_new_slot.php" class="btn btn-success">Add New Slot</a>
-            <a href="add_vehicle.php" class="btn btn-success">Add Vehicle</a>
-            <a href="parking_exit.php" class="btn btn-success">Vehicle Exit</a>
-            <a href="parking_history.php" class="btn btn-secondary">History</a>
-            <a href="parking_history_delete.php" class="btn btn-secondary">Parking History Delete</a>
-        </div>
-    <!-- Table -->
-    <h5 class="mt-4 mb-2">Parking Slot Status</h5>
-    <div class="glass-table-container shadow">
-        <table class="table table-bordered text-center">
-            <thead class="table-light">
-                <tr><th>Slot ID</th><th>Slot Name</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-                <?php while($row = $slots->fetch_assoc()) { ?>
-                <tr>
-                    <td><?= $row['slot_id'] ?></td>
-                    <td><?= htmlspecialchars($row['slot_name']) ?></td>
-                    <td>
+
+        <h5 class="mt-4 mb-3">Parking Slot Status</h5>
+        <div class="glass-table-container">
+            <?php while($row = $slots->fetch_assoc()) { ?>
+            <div class="slot-card">
+                <div class="slot-header">
+                    <div><strong><?= htmlspecialchars($row['slot_name']) ?></strong></div>
+                    <div>
                         <?php if ($row['status'] == 'Available') { ?>
                             <span class="status-available">Available</span>
                         <?php } else { ?>
                             <span class="status-occupied">Occupied</span>
                         <?php } ?>
-                    </td>
-                </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+                <div class="slot-date">Modified: <?= date('d M Y, h:i A', time()) ?></div></div>
+            <?php } ?>
+        </div>
     </div>
-</div>
+</main>
+
 </body>
 </html>
