@@ -54,6 +54,54 @@ body {
   overflow: hidden;
 }
 
+/* ----------------- PRELOADER ----------------- */
+#preloader {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #0a1931; /* dark background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#preloader.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-content {
+  text-align: center;
+  color: #fff;
+  animation: fadeInOut 2s infinite;
+}
+
+.loader-content i {
+  font-size: 4rem;
+  color: #00aaff;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.loader-content h1 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.loader-content span {
+  color: #00aaff;
+  font-size: 1.1rem;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0.5; transform: scale(0.9);}
+  50% { opacity: 1; transform: scale(1.05);}
+  100% { opacity: 0.5; transform: scale(0.9);}
+}
+/* --------------------------------------------- */
+
 .login-container {
   background-color: var(--card-bg);
   border-radius: 12px;
@@ -189,10 +237,17 @@ body {
   .footer-text a:hover {
     text-decoration: underline;
   }
-   
 </style>
 </head>
 <body>
+  <!-- PRELOADER -->
+  <div id="preloader">
+    <div class="loader-content">
+      <i class="fas fa-car"></i>
+      <h1>SMART PARKING<br><span>Management System</span></h1>
+    </div>
+  </div>
+
   <div class="login-container shadow">
     <div class="brand-logo">
       <i class="fas fa-parking"></i>
@@ -206,7 +261,7 @@ body {
       </div>
     <?php endif; ?>
 
-    <form method="POST" action="">
+    <form method="POST" action="" onsubmit="showLoader()">
       <div class="input-group">
         <span class="input-group-text">
           <i class="fas fa-user"></i>
@@ -242,9 +297,21 @@ body {
     </form>
 
     <div class="footer-text">
-      <i class="fas fa-shield-alt me-1"></i>  © <?= date('Y') ?> Hamro Easy Parking
+      <i class="fas fa-shield-alt me-1"></i>  © <?= date('Y') ?> SMART PARKING MANAGEMENT SYSTEM
     </div>
   </div>
+
+  <script>
+    // Hide loader after page fully loads
+    window.addEventListener("load", function(){
+      document.getElementById("preloader").classList.add("hide");
+    });
+
+    // Show loader when submitting form (login)
+    function showLoader() {
+      document.getElementById("preloader").classList.remove("hide");
+    }
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
