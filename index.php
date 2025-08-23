@@ -39,7 +39,6 @@ $totalSlots = $availableCount + $occupiedCount;
 <head>
     <title>Parking Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Add Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -189,7 +188,6 @@ $totalSlots = $availableCount + $occupiedCount;
             text-align: center;
         }
         
-        /* Icon styling */
         .sidebar .icon {
             width: 20px;
             text-align: center;
@@ -203,17 +201,14 @@ $totalSlots = $availableCount + $occupiedCount;
     <div class="logo">HAMRO EASY PARKING</div>
     <ul class="nav-menu">
         <li><a href="#"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
-        <li><a href="add_vehicle.php"><span class="icon"><i class="fas fa-car"></i></span> Vehicle Entry</a></li>
+                <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-car"></i></span> Add Parking Slot</a></li>
+        <li><a href="add_vehicle.php"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Vehicle Entry</a></li>
         <li><a href="parking_parked.php"><span class="icon"><i class="fas fa-parking"></i></span> Vehicle Parked</a></li>
-        <li><a href="parking_exit.php"><span class="icon"><i class="fas fa-sign-out-alt"></i></span> Vehicle Exit</a></li>
         <li><a href="parking_history.php"><span class="icon"><i class="fas fa-file-alt"></i></span> Parking Records</a></li>
         <li><a href="show_receipt.php"><span class="icon"><i class="fas fa-receipt"></i></span> Receipt</a></li>
-        <li><a href="parking_history.php"><span class="icon"><i class="fas fa-history"></i></span> History</a></li>
-    </ul>
-    <div class="section-title">add slot & Data Deletion</div>
-    <ul class="nav-menu">
+         <li><a href="parking_exit.php"><span class="icon"><i class="fas fa-sign-out-alt"></i></span> Vehicle Exit</a></li>
         <li><a href="parking_history_delete.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete History</a></li>
-        <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Parking Slot</a></li>
+        <li><a href="Delete_old_slot.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete Parking Slot</a></li>
     </ul>
     <div class="logout"><a href="admin_login.php"><span class="icon"><i class="fas fa-door-open"></i></span> Log Out</a></div>
 </div>

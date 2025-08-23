@@ -115,7 +115,7 @@ if ($vehicles === false) {
         }
 
         body {
-            background: linear-gradient(135deg, var(--light-blue) 0%, #d6e4f0 100%);
+           background-color: #1e3a8a;
             color: var(--black);
             line-height: 1.6;
             min-height: 100vh;

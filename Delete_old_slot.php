@@ -100,7 +100,7 @@ $availableSlots = $slotData['available'] ?? 0;
         }
 
         body {
-            background: linear-gradient(135deg, var(--light-blue) 0%, #d6e4f0 100%);
+           background-color: #1e3a8a;
             color: var(--black);
             line-height: 1.6;
             min-height: 100vh;
@@ -374,32 +374,34 @@ $availableSlots = $slotData['available'] ?? 0;
         <div class="actions-container">
             <div class="action-card">
                 <div class="card-header">
-                    <i class="fas fa-plus-circle"></i>
+                    <i class="fas fa-minus-circle"></i>
                     <div>
-                        <h2 class="card-title">Add New Slots</h2>
-                        <p class="card-description">Add new parking slots to the system</p>
+                        <h2 class="card-title">Delete Existing Slots</h2>
+                        <p class="card-description">Remove parking slots from the system</p>
                     </div>
                 </div>
                 
                 <form method="POST">
                     <div class="form-group">
-                        <label for="add_quantity">Number of slots to add</label>
-                        <input type="number" id="add_quantity" name="add_quantity" min="1" required>
-                        <div class="alert warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Note: This will add the most recently added slots first
-                    </div>
+                        <label for="delete_quantity">Number of slots to delete</label>
+                        <input type="number" id="delete_quantity" name="delete_quantity" min="1" required>
                     </div>
                     
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Slots
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-trash-alt"></i> Delete Slots
                         </button>
                     </div>
                     
-                    <?php if (isset($addMessage)) echo $addMessage; ?>
+                    <?php if (isset($deleteMessage)) echo $deleteMessage; ?>
+                    
+                    <div class="alert warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Note: This will delete the most recently added slots first
+                    </div>
                 </form>
             </div>
+        </div>
     </div>
         <a href="index.php" class="btn btn-primary">
             <i class="fas fa-arrow-left"></i> Back to Dashboard

@@ -1,142 +1,240 @@
 <?php
-// DB connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "parking_system";
+session_start();
+$conn = new mysqli('localhost', 'root', '', 'parking_system');
+include 'config_secure.php'; // 🔐 encryption/decryption functions
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Include encryption/decryption + hashing functions
-require_once 'config_secure.php';
+// Handle vehicle exit (optional)
+if (isset($_GET['exit']) && is_numeric($_GET['exit'])) {
+    $vehicle_id = intval($_GET['exit']);
+    $exit_time = date('Y-m-d H:i:s');
 
-$vehicle_number = "";
-$data = null;
-$error = "";
+    $result = $conn->query("SELECT entry_time, slot_id FROM vehicles WHERE vehicle_id = $vehicle_id");
+    if ($result && $row = $result->fetch_assoc()) {
+        $entry_time = $row['entry_time'];
+        $slot_id = $row['slot_id'];
 
-// Form submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $vehicle_number = trim($_POST['vehicle_no']);
+        $duration_sec = strtotime($exit_time) - strtotime($entry_time);
+        $duration_hrs = ceil($duration_sec / 3600);
+        $charges = $duration_hrs * 10;
 
-    if (empty($vehicle_number)) {
-        $error = "Please enter a vehicle number.";
-    } else {
-        // Encrypt the input to match DB stored value
-        $encrypted_vehicle_no = encryptVehicleNo($vehicle_number);
+        $update = "UPDATE vehicles 
+                   SET exit_time='$exit_time', duration=$duration_hrs, charges=$charges, status='Exited' 
+                   WHERE vehicle_id=$vehicle_id";
 
-        $stmt = $conn->prepare("SELECT * FROM vehicles WHERE vehicle_no = ? ORDER BY exit_time DESC LIMIT 1");
-        $stmt->bind_param("s", $encrypted_vehicle_no);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $data = $result->fetch_assoc();
-
-            // Decrypt vehicle number for display
-            $data['vehicle_no'] = decryptVehicleNo($data['vehicle_no']);
-            // Owner name remains hashed — cannot decrypt
-        } else {
-            $error = "No data found for vehicle number: " . htmlspecialchars($vehicle_number);
+        if (!$conn->query($update)) {
+            die("Error updating vehicle record: " . $conn->error);
         }
 
-        $stmt->close();
+        $conn->query("UPDATE parking_slots SET status='Available' WHERE slot_id = $slot_id");
+    } else {
+        die("Error fetching vehicle info: " . $conn->error);
     }
 }
 
-$conn->close();
+// Handle receipt generation
+if (isset($_GET['receipt']) && is_numeric($_GET['receipt'])) {
+    $vehicle_id = intval($_GET['receipt']);
+    $result = $conn->query("SELECT * FROM vehicles WHERE vehicle_id = $vehicle_id");
+    if ($result && $row = $result->fetch_assoc()) {
+        $vehicle_no = decryptVehicleNo($row['vehicle_no']);
+        $owner_name = decryptOwnerName($row['owner_name']); // make sure this function exists in config_secure.php
+        $entry_time = date('M d, Y H:i', strtotime($row['entry_time']));
+        $exit_time = $row['exit_time'] ? date('M d, Y H:i', strtotime($row['exit_time'])) : '-';
+        $duration = $row['duration'] ?? '-';
+        $charges = $row['charges'] ? '₹' . $row['charges'] : '-';
+
+        echo "<!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Parking Receipt</title>
+            <style>
+                body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+                .receipt { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+                h2 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                td { padding: 10px 5px; }
+                td.label { font-weight: bold; color: #34495e; width: 40%; }
+                .print-btn { background: #3498db; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+                .print-btn:hover { background: #1a6ca6; }
+            </style>
+        </head>
+        <body>
+            <div class='receipt'>
+                <h2>Parking Receipt</h2>
+                <table>
+                    <tr><td class='label'>Vehicle No:</td><td>$vehicle_no</td></tr>
+                    <tr><td class='label'>Owner Name:</td><td>$owner_name</td></tr>
+                    <tr><td class='label'>Entry Time:</td><td>$entry_time</td></tr>
+                    <tr><td class='label'>Exit Time:</td><td>$exit_time</td></tr>
+                    <tr><td class='label'>Duration:</td><td>$duration hrs</td></tr>
+                    <tr><td class='label'>Charges:</td><td>$charges</td></tr>
+                </table>
+                <button class='print-btn' onclick='window.print()'>Print Receipt</button>
+            </div>
+        </body>
+        </html>";
+        exit;
+    } else {
+        die("Vehicle record not found.");
+    }
+}
+
+// Fetch all vehicle history
+$vehicles = $conn->query("SELECT * FROM vehicles ORDER BY entry_time DESC");
+if (!$vehicles) {
+    die("Error fetching vehicles: " . $conn->error);
+}
+
+// Mask owner name for table display
+function maskOwnerName($hashed) {
+    return substr($hashed, 0, 6) . "****" . substr($hashed, -4);
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Vehicle Parking Receipt</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-    :root {
-      --sidebar-blue: #1e3a8a;
-      --primary-blue: #3b82f6;
-      --card-bg: #f1f5f9;
-      --text-black: #000000;
-      --white: #ffffff;
-      --success-green: #10b981;
-      --danger-red: #f87171;
-      --muted-gray: #94a3b8;
-    }
-    body { background-color: var(--sidebar-blue); font-family: 'Segoe UI', sans-serif; color: var(--white); margin: 0; padding: 30px 10px; }
-    .card { background-color: var(--card-bg); border-radius: 16px; box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25); border: none; animation: fadeSlide 0.9s ease; }
-    .card-body { padding: 30px; color: var(--text-black); }
-    h3, h4 { color: var(--primary-blue); font-weight: 700; }
-    .form-label { color: var(--text-black); font-weight: 500; }
-    .form-control { background-color: var(--white); border: 1px solid #cbd5e1; color: var(--text-black); border-radius: 8px; }
-    .form-control::placeholder { color: var(--muted-gray); }
-    .form-control:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25); }
-    .btn-primary { background-color: var(--primary-blue); border: none; font-weight: 600; color: var(--white); transition: all 0.3s ease; }
-    .btn-primary:hover { background-color: var(--sidebar-blue); }
-    .btn-secondary { background-color: var(--sidebar-blue); color: var(--white); border: none; padding: 10px 20px; font-weight: 600; border-radius: 8px; }
-    .btn-secondary:hover { background-color: var(--primary-blue); color: var(--white); }
-    .btn-success { background-color: var(--success-green); border: none; font-weight: 600; padding: 10px 25px; margin-top: 10px; }
-    .btn-success:hover { background-color: #059669; }
-    .alert-danger { background-color: rgba(248, 113, 113, 0.2); color: var(--danger-red); border: 1px solid rgba(248, 113, 113, 0.4); border-radius: 10px; }
-    table.table { color: var(--text-black); border-color: #cbd5e1; margin-top: 20px; animation: fadeIn 0.5s ease-in; }
-    .table th { background-color: var(--primary-blue); color: var(--white); font-weight: 600; }
-    .table td { background-color: rgba(0, 0, 0, 0.02); }
-    @keyframes fadeSlide { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parking History</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary-blue: #2c3e50;
+  --secondary-blue: #3498db;
+  --accent-blue: #1a6ca6;
+  --light-blue: #ecf0f1;
+  --white: #ffffff;
+  --black: #212529;
+  --light-gray: #f8f9fa;
+  --medium-gray: #e9ecef;
+  --dark-gray: #6c757d;
+  --success: #28a745;
+  --error: #dc3545;
+  --warning: #ffc107;
+  --transition: all 0.3s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #1e3a8a; color: var(--black); line-height: 1.6; min-height: 100vh; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+
+header { background: var(--primary-blue); color: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+
+h1 { font-size: 2.2rem; margin-bottom: 5px; display: flex; align-items: center; gap: 15px; }
+h1 i { color: var(--secondary-blue); }
+.subtitle { font-size: 1rem; color: #a0c7e4; font-weight: 400; }
+
+.card { background: var(--white); border-radius: 10px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 30px; }
+.card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--medium-gray); }
+.card-header i { font-size: 1.8rem; color: var(--secondary-blue); background: rgba(52, 152, 219, 0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.card-title { font-size: 1.5rem; color: var(--primary-blue); }
+.card-description { color: var(--dark-gray); margin-top: 5px; font-size: 0.95rem; }
+
+.table-container { overflow-x: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--medium-gray); }
+thead { background: var(--primary-blue); color: var(--white); }
+thead th { font-weight: 600; padding: 18px 20px; }
+tbody tr { transition: var(--transition); }
+tbody tr:hover { background-color: rgba(52, 152, 219, 0.03); }
+
+.status-badge { padding: 6px 14px; border-radius: 20px; font-weight: 500; font-size: 0.85rem; display: inline-block; }
+.status-in-lot { background-color: rgba(40, 167, 69, 0.15); color: var(--success); }
+.status-exited { background-color: rgba(108, 117, 125, 0.15); color: var(--dark-gray); }
+
+.btn-back { background: var(--primary-blue); color: var(--white); padding: 12px 25px; border-radius: 8px; font-weight: 500; display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; transition: var(--transition); text-decoration:none;}
+.btn-back:hover { background: var(--accent-blue); transform: translateY(-2px); }
+
+.empty-state { text-align: center; padding: 50px 20px; color: var(--dark-gray); }
+.empty-state i { font-size: 3rem; color: var(--medium-gray); margin-bottom: 15px; }
+.empty-state h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--primary-blue); }
+
+@media (max-width: 768px) {
+  header { flex-direction: column; gap: 20px; }
+  .card { padding: 20px; }
+  th, td { padding: 12px 15px; }
+  thead th { padding: 15px; }
+}
+</style>
 </head>
 <body>
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
-      <div class="card shadow">
-        <div class="card-body">
-          <h3 class="text-center mb-4">Search Parking Receipt</h3>
-
-          <form method="POST" action="">
-            <div class="mb-3">
-              <label for="vehicle_id" class="form-label">Vehicle Number</label>
-              <input type="text" class="form-control" id="vehicle_id" name="vehicle_no"
-                     placeholder="e.g. BA 2 PA 1234" required value="<?= htmlspecialchars($vehicle_number) ?>">
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Search</button>
-          </form>
-
-          <?php if (!empty($error)): ?>
-            <div class="alert alert-danger mt-3"><?= $error ?></div>
-          <?php endif; ?>
-
-          <?php if ($data): ?>
-            <hr>
-            <h4 class="text-center mb-3">Parking Receipt</h4>
-            <table class="table table-bordered">
-              <tr><th>Vehicle Number</th><td><?= htmlspecialchars($data['vehicle_no']) ?></td></tr>
-              <tr><th>Owner Name</th><td><?= htmlspecialchars($data['owner_name']) ?> (hashed)</td></tr>
-              <tr><th>Vehicle Type</th><td><?= htmlspecialchars($data['vehicle_type']) ?></td></tr>
-              <tr><th>Slot ID</th><td><?= htmlspecialchars($data['slot_id']) ?></td></tr>
-              <tr><th>Entry Time</th><td><?= htmlspecialchars($data['entry_time']) ?></td></tr>
-              <tr><th>Exit Time</th><td><?= htmlspecialchars($data['exit_time']) ?></td></tr>
-              <tr><th>Total Amount</th><td><?= htmlspecialchars($data['charges']) ?> NPR</td></tr>
-            </table>
-
-            <div class="text-center">
-              <button class="btn btn-success" onclick="window.print()">🧾 Print Receipt</button>
-            </div>
-          <?php endif; ?>
-        </div>
-      </div>
-
-      <div class="text-center mt-4 text-muted">
-        <a href="index.php" class="btn btn-secondary">← Back to Dashboard</a>
-      </div>
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-car"></i>
+    <div>
+      <h2 class="card-title">Vehicle Parked Records</h2>
+      <p class="card-description">All vehicles currently parked in the facility</p>
     </div>
   </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Vehicle No</th>
+          <th>Owner Name</th>
+          <th>Entry Time</th>
+          <th>Exit Time</th>
+          <th>Duration (hrs)</th>
+          <th>Charges (₹)</th>
+          <th>Status</th>
+          <th>Receipt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if ($vehicles->num_rows > 0): ?>
+          <?php while($row = $vehicles->fetch_assoc()): ?>
+          <tr>
+            <td><?= htmlspecialchars(decryptVehicleNo($row['vehicle_no'])) ?></td>
+            <td><?= htmlspecialchars(maskOwnerName($row['owner_name'])) ?></td>
+            <td><?= date('M d, Y H:i', strtotime($row['entry_time'])) ?></td>
+            <td><?= $row['exit_time'] ? date('M d, Y H:i', strtotime($row['exit_time'])) : '-' ?></td>
+            <td><?= $row['duration'] ?? '-' ?></td>
+            <td><?= $row['charges'] ? '₹' . $row['charges'] : '-' ?></td>
+            <td>
+              <?php if ($row['status'] === 'In Lot'): ?>
+                <span class="status-badge status-in-lot">
+                  <i class="fas fa-car"></i> In Lot
+                </span>
+              <?php else: ?>
+                <span class="status-badge status-exited">
+                  <i class="fas fa-check-circle"></i> Exited
+                </span>
+              <?php endif; ?>
+            </td>
+            <td>
+                <a href="?receipt=<?= $row['vehicle_id'] ?>" class="btn-back" style="padding:5px 10px; font-size:14px;"><i class="fas fa-receipt"></i> Receipt</a>
+            </td>
+          </tr>
+          <?php endwhile; ?>
+        <?php else: ?>
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>No Parking Records Found</h3>
+                <p>There are no vehicles in the parking history yet.</p>
+              </div>
+            </td>
+          </tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<a href="index.php" class="btn-back">
+  <i class="fas fa-arrow-left"></i> Back to Dashboard
+</a>
 
 </body>
 </html>

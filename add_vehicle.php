@@ -18,43 +18,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vehicle_no_raw = trim($_POST['vehicle_no']);
     $owner_name_raw = trim($_POST['owner_name']);
     $vehicle_type = trim($conn->real_escape_string($_POST['vehicle_type']));
+    $duration_hours = intval($_POST['duration_hours']); // Parking duration in hours
     $entry_time = date('Y-m-d H:i:s');
+    $exit_time = date('Y-m-d H:i:s', strtotime("+$duration_hours hours", strtotime($entry_time)));
 
-    // Encrypt vehicle number (two-way)
-    $vehicle_no = encryptVehicleNo($vehicle_no_raw);
-
-    // Hash owner name (one-way)
-    $owner_name = hashOwnerName($owner_name_raw);
-
-    // Greedy Algorithm: Pick the first available slot
-    $slotQuery = $conn->query("SELECT slot_id, slot_name FROM parking_slots WHERE status = 'Available' ORDER BY slot_id ASC LIMIT 1");
-
-    if ($slotQuery->num_rows > 0) {
-        $slotData = $slotQuery->fetch_assoc();
-        $slot_id = $slotData['slot_id'];
-        $slot_name = $slotData['slot_name'];
-
-        // Insert encrypted vehicle number & hashed owner name
-        $insert = $conn->prepare("INSERT INTO vehicles (vehicle_no, owner_name, vehicle_type, entry_time, slot_id, status) VALUES (?, ?, ?, ?, ?, 'In Lot')");
-        $insert->bind_param("ssssi", $vehicle_no, $owner_name, $vehicle_type, $entry_time, $slot_id);
-
-        if ($insert->execute()) {
-            $insert->close();
-
-            // Update slot status to 'Occupied'
-            $update = $conn->prepare("UPDATE parking_slots SET status = 'Occupied' WHERE slot_id = ?");
-            $update->bind_param("i", $slot_id);
-            $update->execute();
-            $update->close();
-
-            // Redirect to dashboard with success message
-            header("Location: index.php?success=" . urlencode("Vehicle added to slot $slot_name"));
-            exit;
-        } else {
-            $message = "Error inserting vehicle: " . $insert->error;
-        }
+    // Validate duration (1 to 24 hours only)
+    if ($duration_hours < 1 || $duration_hours > 24) {
+        $message = "Parking duration must be between 1 and 24 hours.";
     } else {
-        $message = "No available slots!";
+        // Encrypt vehicle number (two-way)
+        $vehicle_no = encryptVehicleNo($vehicle_no_raw);
+
+        // Hash owner name (one-way)
+        $owner_name = encryptOwnerName($owner_name_raw);
+
+        // Greedy Algorithm: Pick the first available slot
+        $slotQuery = $conn->query("SELECT slot_id, slot_name FROM parking_slots WHERE status = 'Available' ORDER BY slot_id ASC LIMIT 1");
+
+        if ($slotQuery->num_rows > 0) {
+            $slotData = $slotQuery->fetch_assoc();
+            $slot_id = $slotData['slot_id'];
+            $slot_name = $slotData['slot_name'];
+
+            // Insert encrypted vehicle number, hashed owner name, duration, entry & exit time
+            $insert = $conn->prepare("INSERT INTO vehicles (vehicle_no, owner_name, vehicle_type, entry_time, exit_time, slot_id, duration_hours, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'In Lot')");
+            $insert->bind_param("sssssis", $vehicle_no, $owner_name, $vehicle_type, $entry_time, $exit_time, $slot_id, $duration_hours);
+
+            if ($insert->execute()) {
+                $insert->close();
+
+                // Update slot status to 'Occupied'
+                $update = $conn->prepare("UPDATE parking_slots SET status = 'Occupied' WHERE slot_id = ?");
+                $update->bind_param("i", $slot_id);
+                $update->execute();
+                $update->close();
+
+                // Redirect to dashboard with success message
+                header("Location: index.php?success=" . urlencode("Vehicle added to slot $slot_name for $duration_hours hour(s). Exit time: $exit_time"));
+                exit;
+            } else {
+                $message = "Error inserting vehicle: " . $insert->error;
+            }
+        } else {
+            $message = "No available slots!";
+        }
     }
 }
 ?>
@@ -180,6 +187,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label class="form-label">Owner Name</label>
                 <input type="text" class="form-control" name="owner_name" placeholder="Owner full name" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Parking Duration (Hours)</label>
+                <input type="number" class="form-control" name="duration_hours" min="1" max="24" placeholder="Enter hours (1–24)" required>
             </div>
 
             <div class="d-flex justify-content-between">
