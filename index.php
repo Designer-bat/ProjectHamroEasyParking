@@ -277,12 +277,189 @@ function usageToColor($use, $minUse, $maxUse) {
 
         /* Chart card */
         .chart-card { background: var(--white); border-radius: 14px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 70px;
+            z-index: 2000;
+        }
+
+        .notification-bell {
+            position: relative;
+            background: var(--primary-blue);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .notification-bell .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-panel {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 320px;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .notification-panel.show {
+            display: block;
+        }
+
+        .notification-header {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            color: #3b82f6;
+            font-size: 1.1rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .notification-clear {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 130px;
+            z-index: 2001;
+            max-width: 350px;
+        }
+        
+        .toast {
+            background: var(--white);
+            border-left: 4px solid #3b82f6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .toast.hide {
+            animation: slideOut 0.3s ease;
+            opacity: 0;
+        }
+        
+        .toast-icon {
+            color: #3b82f6;
+            font-size: 1.2rem;
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
     </style>
 </head>
 <body>
 
 <!-- Theme Toggle -->
 <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light">🌗</button>
+
+<!-- Notification System -->
+<div class="notification-container">
+    <div class="notification-bell" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <span class="badge" id="notificationCount">0</span>
+    </div>
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            Notifications
+            <button class="notification-clear" id="clearNotifications">Clear All</button>
+        </div>
+        <ul class="notification-list" id="notificationList">
+            <!-- Notifications will be added here dynamically -->
+        </ul>
+    </div>
+</div>
+
+<!-- Toast Container for temporary alerts -->
+<div class="toast-container" id="toastContainer"></div>
 
 <!-- Sidebar -->
 <div class="sidebar">
@@ -493,6 +670,208 @@ new Chart(document.getElementById('entriesChart').getContext('2d'), {
         scales: { y: { beginAtZero: true } }
     }
 });
+
+/* =======================
+   Notification System
+   ======================= */
+(function(){
+    const notificationBell = document.getElementById('notificationBell');
+    const notificationPanel = document.getElementById('notificationPanel');
+    const notificationCount = document.getElementById('notificationCount');
+    const notificationList = document.getElementById('notificationList');
+    const clearButton = document.getElementById('clearNotifications');
+    const toastContainer = document.getElementById('toastContainer');
+    
+    // Load notifications from localStorage
+    let notifications = JSON.parse(localStorage.getItem('parkingNotifications') || '[]');
+    
+    // Function to update notification badge
+    function updateNotificationBadge() {
+        const unreadCount = notifications.filter(n => !n.read).length;
+        notificationCount.textContent = unreadCount;
+        notificationCount.style.display = unreadCount > 0 ? 'flex' : 'none';
+    }
+    
+    // Function to render notifications
+    function renderNotifications() {
+        notificationList.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            notificationList.innerHTML = '<li class="notification-item"><div class="notification-content">No notifications yet</div></li>';
+            return;
+        }
+        
+        // Show latest first
+        const sortedNotifications = [...notifications].reverse();
+        
+        sortedNotifications.forEach(notification => {
+            const li = document.createElement('li');
+            li.className = 'notification-item';
+            if (!notification.read) li.style.background = '#f9fafb';
+            
+            li.innerHTML = `
+                <div class="notification-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="notification-content">
+                    <div>${notification.message}</div>
+                    <div class="notification-time">${formatTime(notification.timestamp)}</div>
+                </div>
+            `;
+            
+            li.addEventListener('click', () => {
+                notification.read = true;
+                localStorage.setItem('parkingNotifications', JSON.stringify(notifications));
+                updateNotificationBadge();
+                renderNotifications();
+            });
+            
+            notificationList.appendChild(li);
+        });
+    }
+    
+    // Format time for display
+    function formatTime(timestamp) {
+        const now = new Date();
+        const date = new Date(timestamp);
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} min ago`;
+        if (diffHours < 24) return `${diffHours} hr ago`;
+        return date.toLocaleDateString();
+    }
+    
+    // Add new notification
+    function addNotification(message, showToast = true) {
+        const newNotification = {
+            id: Date.now(),
+            message,
+            timestamp: new Date().toISOString(),
+            read: false
+        };
+        
+        notifications.push(newNotification);
+        // Keep only the last 50 notifications
+        if (notifications.length > 50) {
+            notifications = notifications.slice(-50);
+        }
+        
+        localStorage.setItem('parkingNotifications', JSON.stringify(notifications));
+        updateNotificationBadge();
+        renderNotifications();
+        
+        if (showToast) {
+            showToastNotification(message);
+        }
+        
+        // Show desktop notification if permitted
+        if (Notification.permission === 'granted') {
+            new Notification('Parking Alert', { body: message });
+        }
+    }
+    
+    // Show toast notification
+    function showToastNotification(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <div class="toast-icon"><i class="fas fa-bell"></i></div>
+            <div class="toast-content">${message}</div>
+            <button class="toast-close">&times;</button>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Add close event
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.addEventListener('click', () => {
+            toast.classList.add('hide');
+            setTimeout(() => {
+                toastContainer.removeChild(toast);
+            }, 300);
+        });
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (toast.parentNode === toastContainer) {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    if (toast.parentNode === toastContainer) {
+                        toastContainer.removeChild(toast);
+                    }
+                }, 300);
+            }
+        }, 5000);
+    }
+    
+    // Check for slot availability changes
+    function checkForSlotNotifications() {
+        const availNow = <?= (int)$availableCount ?>;
+        const key = 'lastAvailableCount';
+        const prevStr = localStorage.getItem(key);
+        const hadPrev = prevStr !== null;
+        const prev = hadPrev ? parseInt(prevStr, 10) : 0;
+        
+        if (hadPrev && availNow > prev) {
+            const diff = availNow - prev;
+            const message = diff === 1 ? 
+                '1 parking slot just became available' : 
+                `${diff} parking slots just became available`;
+            
+            addNotification(message);
+        }
+        
+        localStorage.setItem(key, String(availNow));
+    }
+    
+    // Toggle notification panel
+    notificationBell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notificationPanel.classList.toggle('show');
+        
+        // Mark all as read when opening
+        if (notificationPanel.classList.contains('show')) {
+            notifications = notifications.map(n => ({...n, read: true}));
+            localStorage.setItem('parkingNotifications', JSON.stringify(notifications));
+            updateNotificationBadge();
+        }
+    });
+    
+    // Clear all notifications
+    clearButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifications = [];
+        localStorage.setItem('parkingNotifications', JSON.stringify(notifications));
+        updateNotificationBadge();
+        renderNotifications();
+    });
+    
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!notificationBell.contains(e.target) && !notificationPanel.contains(e.target)) {
+            notificationPanel.classList.remove('show');
+        }
+    });
+    
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+    
+    // Initialize
+    updateNotificationBadge();
+    renderNotifications();
+    checkForSlotNotifications();
+    
+    // Also check for notifications every minute
+    setInterval(checkForSlotNotifications, 60000);
+    
+    // Demo notifications for testing
+    setTimeout(() => {
+        addNotification('System is running smoothly', false);
+    }, 2000);
+})();
 
 /* =======================
    Voice Alert (only when available slots increase)
