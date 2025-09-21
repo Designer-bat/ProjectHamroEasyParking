@@ -434,7 +434,36 @@ function usageToColor($use, $minUse, $maxUse) {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(100%); opacity: 0; }
         }
-    </style>
+
+        /* Basic center + look */
+.clock {
+  background: rgba(255,255,255,0.06);
+  padding: 16px 20px;   /* smaller padding */
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(2,6,23,0.5);
+  text-align: center;
+}
+
+.time {
+  font-size: 32px;      /* reduced from 56px */
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.date {
+  margin-top: 6px;
+  font-size: 12px;      /* smaller text */
+  color: rgba(230,238,248,0.75);
+}
+
+/* small screens */
+@media (max-width:220px){
+  .time { font-size: 18px; }
+  .clock { padding: 6px 4px; }
+}
+
+</style>
 </head>
 <body>
 
@@ -463,7 +492,30 @@ function usageToColor($use, $minUse, $maxUse) {
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <div class="logo">HAMRO EASY PARKING</div>
+    <div class="logo">Parking Management System</div>
+    <div class="clock" aria-live="polite">
+    <div id="time" class="time">00:00:00</div>
+    <div id="date" class="date">Loading date...</div>
+  </div>
+
+  <script>
+    function pad(n){ return n < 10 ? '0' + n : n; }
+
+    function updateClock(){
+      const now = new Date();
+      const h = pad(now.getHours());
+      const m = pad(now.getMinutes());
+      const s = pad(now.getSeconds());
+      document.getElementById('time').textContent = `${h}:${m}:${s}`;
+
+      // e.g. Sunday, Sep 21, 2025
+      const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
+      document.getElementById('date').textContent = now.toLocaleDateString(undefined, options);
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
     <ul class="nav-menu">
         <li><a href="#"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
         <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-car"></i></span> Add Parking Slot</a></li>

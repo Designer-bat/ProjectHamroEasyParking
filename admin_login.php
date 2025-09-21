@@ -252,7 +252,7 @@ body {
     <div class="brand-logo">
       <i class="fas fa-parking"></i>
     </div>
-    <h1 class="login-title">Hamro Easy Parking </h1>
+    <h1 class="login-title">Parking Management System</h1>
 
     <?php if (!empty($error)): ?>
       <div class="alert" role="alert">
@@ -297,7 +297,7 @@ body {
     </form>
 
     <div class="footer-text">
-      <i class="fas fa-shield-alt me-1"></i>  © <?= date('Y') ?> SMART PARKING MANAGEMENT SYSTEM
+      <i class="fas fa-shield-alt me-1"></i>  © <?= date('Y') ?> PARKING MANAGEMENT SYSTEM
     </div>
   </div>
 
