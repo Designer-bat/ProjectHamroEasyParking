@@ -402,9 +402,9 @@ $availableSlots = $slotData['available'] ?? 0;
                 </form>
             </div>
         </div>
-    </div>
         <a href="index.php" class="btn btn-primary">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
+    </div>
 </body>
 </html>
