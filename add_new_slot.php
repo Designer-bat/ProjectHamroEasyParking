@@ -87,6 +87,7 @@ $availableSlots = $slotData['available'] ?? 0;
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
+    --sidebar-blue: #1e3a8a;
     --primary-blue: #2c3e50;
     --secondary-blue: #3498db;
     --accent-blue: #1a6ca6;
@@ -108,7 +109,7 @@ $availableSlots = $slotData['available'] ?? 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 body {
-    background: linear-gradient(135deg, var(--light-blue) 0%, #d6e4f0 100%);
+   background-color: var(--sidebar-blue); 
     color: var(--black);
     line-height: 1.6;
     min-height: 100vh;

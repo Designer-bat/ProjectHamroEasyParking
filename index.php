@@ -190,6 +190,8 @@ function usageToColor($use, $minUse, $maxUse) {
             margin-bottom: 20px;
         }
 
+        
+
         .sidebar .nav-menu { list-style: none; padding: 0; margin: 0 0 20px 0; }
         .sidebar .nav-menu li a,
         .sidebar .logout a {
@@ -214,6 +216,21 @@ function usageToColor($use, $minUse, $maxUse) {
 
         .main-content { margin-left: 240px; padding: 20px; }
         .navbar-brand { color: var(--text-color); font-weight: 700; font-size: 1.25rem; }
+
+        /* Custom scrollbar */
+        .nav-menu::-webkit-scrollbar {
+            width: 8px;
+        }
+        .nav-menu::-webkit-scrollbar-track {
+            background: #1a252f;
+        }
+        .nav-menu::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+        .nav-menu::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
 
         .card-box {
             background-color: var(--card-bg);
