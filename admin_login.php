@@ -2,7 +2,13 @@
 session_start();
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 
-$error = ""; // Initialize error variable
+$error = "";
+
+// If already logged in, go to dashboard
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: index.php");
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
@@ -13,9 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $admin = $stmt->get_result()->fetch_assoc();
 
-    if ($admin && $password === $admin['PASSWORD']) {
+    if ($admin && $password === $admin['PASSWORD']) { 
+        // ✅ Password check (plain text)
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_username'] = $admin['username'];
+        $_SESSION['last_activity'] = time(); // for session timeout
         header("Location: index.php");
         exit;
     } else {

@@ -534,7 +534,7 @@ function usageToColor($use, $minUse, $maxUse) {
     setInterval(updateClock, 1000);
   </script>
     <ul class="nav-menu">
-        <li><a href="#"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
+        <li><a href="index.php"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
         <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-car"></i></span> Add Parking Slot</a></li>
         <li><a href="add_vehicle.php"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Vehicle Entry</a></li>
         <li><a href="parking_parked.php"><span class="icon"><i class="fas fa-parking"></i></span> Vehicle Parked</a></li>
@@ -962,6 +962,31 @@ new Chart(document.getElementById('entriesChart').getContext('2d'), {
     }
     localStorage.setItem(key, String(availNow));
 })();
+
+<?php
+session_start();
+
+// Timeout duration
+$timeout_duration = 60; // 30 minutes
+
+// Check if user is logged in
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: admin_login.php");
+    exit;
+}
+
+// Check for session timeout
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout_duration) {
+    session_unset();
+    session_destroy();
+    header("Location: admin_login.php?timeout=1");
+    exit;
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();
+?>
+
 </script>
 </body>
 </html>
