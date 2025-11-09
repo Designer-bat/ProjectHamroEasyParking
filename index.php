@@ -30,14 +30,32 @@ if ($result3) {
 }
 
 /* Keep your original efficiency formula */
-$parkingEfficiency = $totalVehiclesToday > 0 ? ($totalIncomeToday / ($totalVehiclesToday * 10)) * 0.5 : 0;
+// Efficiency formula: (totalIncomeToday / (totalVehiclesToday * 10)) * 100 gives percentage efficiency assuming max possible income is totalVehiclesToday * 10.
+// Adjust the divisor or multiplier as per your business logic.
+$parkingEfficiency = $totalVehiclesToday > 0 ? ($totalIncomeToday / ($totalVehiclesToday * 10)) * 100 : 0;
 $parkingEfficiency = max(0, round($parkingEfficiency, 2));
 
 /* =======================
-   PARKING SLOT STATS
-   ======================= */
 $slots = $conn->query("SELECT * FROM parking_slots");
-$availableCount = (int)$conn->query("SELECT COUNT(*) AS total FROM parking_slots WHERE status = 'Available'")->fetch_assoc()['total'];
+
+// Use a single query to count slots by status
+$statusCounts = [
+    'Available' => 0,
+    'Occupied' => 0
+];
+$result = $conn->query("SELECT status, COUNT(*) AS total FROM parking_slots GROUP BY status");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $status = $row['status'];
+        $count = (int)$row['total'];
+        if (isset($statusCounts[$status])) {
+            $statusCounts[$status] = $count;
+        }
+    }
+}
+$availableCount = $statusCounts['Available'];
+$occupiedCount = $statusCounts['Occupied'];
+$totalSlots = $availableCount + $occupiedCount;
 $occupiedCount  = (int)$conn->query("SELECT COUNT(*) AS total FROM parking_slots WHERE status = 'Occupied'")->fetch_assoc()['total'];
 $totalSlots = $availableCount + $occupiedCount;
 
@@ -601,24 +619,34 @@ function usageToColor($use, $minUse, $maxUse) {
         </div>
 
         <!-- Charts -->
-        <div class="row g-3">
-            <div class="col-lg-7">
-                <div class="chart-card">
-                    <h5 class="mb-3">Weekly Parking Revenue</h5>
-                    <canvas id="revenueChart" height="140"></canvas>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="chart-card">
-                    <h5 class="mb-3">Weekly Vehicle Entries</h5>
-                    <canvas id="entriesChart" height="140"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Parking Slot Status -->
         <h5 class="mt-4 mb-3">Parking Slot Status</h5>
         <div class="glass-table-container">
+            <?php
+            if ($slots === false) {
+                // Query error
+                echo '<div class="text-danger">Error fetching parking slots: ' . htmlspecialchars($conn->error) . '</div>';
+            } elseif ($slots->num_rows === 0) {
+                // No slots found
+                echo '<div class="text-muted">No parking slots found.</div>';
+            } else {
+                while($row = $slots->fetch_assoc()) { ?>
+                    <div class="slot-card">
+                        <div class="slot-header">
+                            <div><strong><?= htmlspecialchars($row['slot_name']) ?></strong></div>
+                            <div>
+                                <?php if ($row['status'] == 'Available') { ?>
+                                    <span class="status-available">Available</span>
+                                <?php } else { ?>
+                                    <span class="status-occupied">Occupied</span>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="slot-date">Modified: <?= isset($row['modified_at']) ? date('d M Y, h:i A', strtotime($row['modified_at'])) : 'N/A' ?></div>
+                    </div>
+                <?php }
+            }
+            ?>
+        </div>
             <?php if ($slots): while($row = $slots->fetch_assoc()) { ?>
             <div class="slot-card">
                 <div class="slot-header">
@@ -631,7 +659,7 @@ function usageToColor($use, $minUse, $maxUse) {
                         <?php } ?>
                     </div>
                 </div>
-                <div class="slot-date">Modified: <?= date('d M Y, h:i A', time()) ?></div>
+                <div class="slot-date">Modified: <?= isset($row['modified_at']) ? date('d M Y, h:i A', strtotime($row['modified_at'])) : 'N/A' ?></div>
             </div>
             <?php } endif; ?>
         </div>
@@ -964,7 +992,6 @@ new Chart(document.getElementById('entriesChart').getContext('2d'), {
 })();
 
 <?php
-session_start();
 
 // Timeout duration
 $timeout_duration = 60; // 30 minutes
