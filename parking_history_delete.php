@@ -282,7 +282,7 @@
             </table>
         </div>
 
-        <a href="dashboard.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
     </div>
     </body>
