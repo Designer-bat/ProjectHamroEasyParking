@@ -62,7 +62,7 @@ function maskOwnerName($hashed) {
   --danger: #dc3545;
   --light: #f8f9fa;
   --dark: #212529;
-  --bg: #ffffff;
+  --bg: #1e3a8a;
   --text: #212529;
 }
 body.dark {
