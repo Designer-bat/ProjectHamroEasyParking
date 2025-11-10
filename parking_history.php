@@ -1,4 +1,5 @@
 <?php
+include ("index.html");
 session_start();
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 include 'config_secure.php'; // encryption/decryption functions
@@ -65,47 +66,144 @@ function maskOwnerName($hashed) {
   --bg: #1e3a8a;
   --text: #212529;
 }
+
 body.dark {
   --bg: #121212;
   --text: #e0e0e0;
   --primary: #90caf9;
   --secondary: #42a5f5;
 }
+
 body {
-  background: var(--bg);
+  background: var(--body-bg);  
   color: var(--text);
   font-family: 'Segoe UI', sans-serif;
-  padding: 20px;
+  padding: 30px;
   transition: background 0.3s, color 0.3s;
 }
-.card { background: var(--bg); border-radius: 10px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 12px 15px; border-bottom: 1px solid #ddd; }
-thead { background: var(--primary); color: white; }
-tbody tr:hover { background: rgba(0,0,0,0.05); }
-.status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; }
-.in-lot { background: rgba(40,167,69,0.15); color: var(--success); }
-.exited { background: rgba(108,117,125,0.15); color: gray; }
-.overstay { background: rgba(220,53,69,0.2) !important; }
-.btn-exit { background: var(--danger); color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; }
-.btn-exit:hover { background: #b52a3a; }
-.toggle-dark {
-  position: fixed; top: 20px; right: 20px;
-  background: var(--secondary); color: white;
-  border: none; padding: 10px; border-radius: 50%;
-  cursor: pointer; font-size: 1.2rem;
+
+.card {
+  background: var(--light);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  margin: 0 auto;
+  max-width: 1100px;
 }
-.btn-back {
-  display: inline-block;
-  margin-top: 20px;
+
+.card h2 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+  text-align: center;
+  border-bottom: 2px solid var(--secondary);
+  padding-bottom: 10px;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+thead {
   background: var(--primary);
   color: white;
-  padding: 10px 20px;
+}
+
+th {
+  padding: 14px 10px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+tbody tr:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.in-lot {
+  background: rgba(40,167,69,0.1);
+  color: var(--success);
+}
+
+.exited {
+  background: rgba(108,117,125,0.15);
+  color: gray;
+}
+
+.overstay {
+  background: rgba(220,53,69,0.08);
+}
+
+.btn-exit {
+  background: var(--danger);
+  color: white;
+  padding: 6px 12px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 500;
-  transition: 0.3s;
+  transition: background 0.3s ease;
 }
+
+.btn-exit:hover {
+  background: #b52a3a;
+}
+
+.toggle-dark {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.3s ease;
+}
+
+.toggle-dark:hover {
+  background: var(--primary);
+}
+
+.btn-back {
+  display: inline-block;
+  margin-top: 25px;
+  background: var(--primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
 .btn-back:hover {
   background: var(--secondary);
 }
@@ -121,14 +219,14 @@ tbody tr:hover { background: rgba(0,0,0,0.05); }
     <table>
       <thead>
         <tr>
-          <th>Vehicle No</th>
-          <th>Owner</th>
-          <th>Entry</th>
-          <th>Exit</th>
-          <th>Duration (hrs)</th>
-          <th>Charges (₹)</th>
-          <th>Status</th>
-          <th>Action</th>
+          <th style="width: 13%;">Vehicle No</th>
+          <th style="width: 15%;">Owner</th>
+          <th style="width: 18%;">Entry</th>
+          <th style="width: 18%;">Exit</th>
+          <th style="width: 10%;">Duration (hrs)</th>
+          <th style="width: 10%;">Charges (₹)</th>
+          <th style="width: 10%;">Status</th>
+          <th style="width: 6%;">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -166,7 +264,9 @@ tbody tr:hover { background: rgba(0,0,0,0.05); }
 </div>
 
 <!-- Back to Dashboard Button -->
-<a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+<div style="text-align:center;">
+  <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</div>
 
 <script>
 // Dark/Light mode toggle

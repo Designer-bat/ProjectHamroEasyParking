@@ -1,4 +1,5 @@
 <?php
+include ("index.html");
 // ====================== CONFIGURATION ======================
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
@@ -81,7 +82,7 @@ $vehicles = $stmt->get_result();
 <style>
 /* ====================== GLOBAL STYLE ====================== */
 body {
-  background: linear-gradient(135deg, #1e3a8a, #0f172a);
+  background: var(--body-bg);
   font-family: 'Poppins', 'Segoe UI', sans-serif;
   margin: 0;
   padding: 40px 20px;

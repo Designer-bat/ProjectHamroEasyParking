@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+// If admin session not present -> send to login
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: admin_login.php");
+    exit;
+}
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -544,8 +550,9 @@ function usageToColor($use, $minUse, $maxUse) {
         <li><a href="parking_history_delete.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete History</a></li>
         <li><a href="Delete_old_slot.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete Parking Slot</a></li>
         <li><a href="emplye_log.php"><span class="icon"><i class="fas fa-plus-circle"></i></span>Employee log</a></li>
+
     </ul>
-    <div class="logout"><a href="admin_login.php"><span class="icon"><i class="fas fa-door-open"></i></span> Log Out</a></div>
+    <a href="logout.php" class="btn btn-primary">Logout</a>
 </div>
 
 <!-- Main Content -->
@@ -967,7 +974,7 @@ new Chart(document.getElementById('entriesChart').getContext('2d'), {
 session_start();
 
 // Timeout duration
-$timeout_duration = 1800; // 30 minutes
+$timeout_duration = 600; // 30 minutes
 
 // Check if user is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {

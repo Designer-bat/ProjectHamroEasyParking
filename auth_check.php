@@ -2,7 +2,7 @@
 session_start();
 
 // Session timeout (10 minutes = 600 seconds)
-$timeout = 60;
+$timeout = 600;
 
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: admin_login.php");

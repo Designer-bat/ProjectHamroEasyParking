@@ -1,4 +1,5 @@
 <?php
+include ("index.html");
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 require_once "config_secure.php"; // encryption/decryption functions
 
@@ -67,7 +68,7 @@ if ($result && $row = $result->fetch_assoc()) {
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 body {
-  background-color: #1e3a8a;
+  background-color: var(--body-bg);
   color: var(--black);
   min-height: 100vh;
   padding: 20px;

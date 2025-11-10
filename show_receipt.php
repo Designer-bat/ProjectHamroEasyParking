@@ -1,4 +1,5 @@
 <?php
+include ("index.html");
 session_start();
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 include 'config_secure.php'; // 🔐 encryption/decryption functions
@@ -98,70 +99,162 @@ function maskOwnerName($hashed) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Parking History</title>
+<title>Vehicle Parked Records</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --primary-blue: #2c3e50;
-  --secondary-blue: #3498db;
-  --accent-blue: #1a6ca6;
-  --light-blue: #ecf0f1;
-  --white: #ffffff;
-  --black: #212529;
-  --light-gray: #f8f9fa;
-  --medium-gray: #e9ecef;
-  --dark-gray: #6c757d;
+  --primary: #2c3e50;
+  --secondary: #3498db;
+  --accent: #1a6ca6;
+  --light: #ffffff;
+  --bg: #1e3a8a;
+  --gray: #f1f3f5;
+  --text: #212529;
   --success: #28a745;
-  --error: #dc3545;
-  --warning: #ffc107;
+  --danger: #dc3545;
   --transition: all 0.3s ease;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-body { background-color: #1e3a8a; color: var(--black); line-height: 1.6; min-height: 100vh; padding: 20px; }
-.container { max-width: 1200px; margin: 0 auto; }
+body {
+  background: var(--body-bg);
+  color: var(--text);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 30px;
+}
 
-header { background: var(--primary-blue); color: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+.card {
+  background: var(--light);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  margin: 0 auto;
+  max-width: 1100px;
+}
 
-h1 { font-size: 2.2rem; margin-bottom: 5px; display: flex; align-items: center; gap: 15px; }
-h1 i { color: var(--secondary-blue); }
-.subtitle { font-size: 1rem; color: #a0c7e4; font-weight: 400; }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid var(--gray);
+  padding-bottom: 15px;
+}
 
-.card { background: var(--white); border-radius: 10px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 30px; }
-.card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--medium-gray); }
-.card-header i { font-size: 1.8rem; color: var(--secondary-blue); background: rgba(52, 152, 219, 0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.card-title { font-size: 1.5rem; color: var(--primary-blue); }
-.card-description { color: var(--dark-gray); margin-top: 5px; font-size: 0.95rem; }
+.card-header i {
+  font-size: 1.8rem;
+  color: var(--secondary);
+  background: rgba(52,152,219,0.1);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-.table-container { overflow-x: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--medium-gray); }
-thead { background: var(--primary-blue); color: var(--white); }
-thead th { font-weight: 600; padding: 18px 20px; }
-tbody tr { transition: var(--transition); }
-tbody tr:hover { background-color: rgba(52, 152, 219, 0.03); }
+.card-title {
+  font-size: 1.5rem;
+  color: var(--primary);
+}
 
-.status-badge { padding: 6px 14px; border-radius: 20px; font-weight: 500; font-size: 0.85rem; display: inline-block; }
-.status-in-lot { background-color: rgba(40, 167, 69, 0.15); color: var(--success); }
-.status-exited { background-color: rgba(108, 117, 125, 0.15); color: var(--dark-gray); }
+.card-description {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
 
-.btn-back { background: var(--primary-blue); color: var(--white); padding: 12px 25px; border-radius: 8px; font-weight: 500; display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; transition: var(--transition); text-decoration:none;}
-.btn-back:hover { background: var(--accent-blue); transform: translateY(-2px); }
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 
-.empty-state { text-align: center; padding: 50px 20px; color: var(--dark-gray); }
-.empty-state i { font-size: 3rem; color: var(--medium-gray); margin-bottom: 15px; }
-.empty-state h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--primary-blue); }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.95rem;
+}
 
-@media (max-width: 768px) {
-  header { flex-direction: column; gap: 20px; }
-  .card { padding: 20px; }
-  th, td { padding: 12px 15px; }
-  thead th { padding: 15px; }
+thead {
+  background: var(--primary);
+  color: white;
+}
+
+th {
+  padding: 14px 10px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+tbody tr:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-in-lot {
+  background: rgba(40,167,69,0.1);
+  color: var(--success);
+}
+
+.status-exited {
+  background: rgba(108,117,125,0.15);
+  color: gray;
+}
+
+.btn-back {
+  background: var(--primary);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.btn-back:hover {
+  background: var(--secondary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #adb5bd;
+  margin-bottom: 15px;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--primary);
 }
 </style>
 </head>
@@ -180,14 +273,14 @@ tbody tr:hover { background-color: rgba(52, 152, 219, 0.03); }
     <table>
       <thead>
         <tr>
-          <th>Vehicle No</th>
-          <th>Owner Name</th>
-          <th>Entry Time</th>
-          <th>Exit Time</th>
-          <th>Duration (hrs)</th>
-          <th>Charges (₹)</th>
-          <th>Status</th>
-          <th>Receipt</th>
+          <th style="width:13%;">Vehicle No</th>
+          <th style="width:15%;">Owner</th>
+          <th style="width:18%;">Entry</th>
+          <th style="width:18%;">Exit</th>
+          <th style="width:10%;">Duration (hrs)</th>
+          <th style="width:10%;">Charges (₹)</th>
+          <th style="width:10%;">Status</th>
+          <th style="width:6;">Receipt</th>
         </tr>
       </thead>
       <tbody>
@@ -199,20 +292,16 @@ tbody tr:hover { background-color: rgba(52, 152, 219, 0.03); }
             <td><?= date('M d, Y H:i', strtotime($row['entry_time'])) ?></td>
             <td><?= $row['exit_time'] ? date('M d, Y H:i', strtotime($row['exit_time'])) : '-' ?></td>
             <td><?= $row['duration'] ?? '-' ?></td>
-            <td><?= $row['charges'] ? '₹' . $row['charges'] : '-' ?></td>
+            <td><?= $row['charges'] ? '₹'.$row['charges'] : '-' ?></td>
             <td>
               <?php if ($row['status'] === 'In Lot'): ?>
-                <span class="status-badge status-in-lot">
-                  <i class="fas fa-car"></i> In Lot
-                </span>
+                <span class="status-badge status-in-lot"><i class="fas fa-car"></i> In Lot</span>
               <?php else: ?>
-                <span class="status-badge status-exited">
-                  <i class="fas fa-check-circle"></i> Exited
-                </span>
+                <span class="status-badge status-exited"><i class="fas fa-check-circle"></i> Exited</span>
               <?php endif; ?>
             </td>
             <td>
-                <a href="?receipt=<?= $row['vehicle_id'] ?>" class="btn-back" style="padding:5px 10px; font-size:14px;"><i class="fas fa-receipt"></i> Receipt</a>
+              <a href="?receipt=<?= $row['vehicle_id'] ?>" class="btn-back"><i class="fas fa-receipt"></i> Receipt</a>
             </td>
           </tr>
           <?php endwhile; ?>
@@ -232,9 +321,9 @@ tbody tr:hover { background-color: rgba(52, 152, 219, 0.03); }
   </div>
 </div>
 
-<a href="index.php" class="btn-back">
-  <i class="fas fa-arrow-left"></i> Back to Dashboard
-</a>
+<div style="text-align:center; margin-top:20px;">
+  <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</div>
 
 </body>
 </html>

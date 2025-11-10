@@ -1,4 +1,5 @@
 <?php
+include ("index.html");
 $conn = new mysqli("localhost", "root", "", "employee_log");
 
 if (isset($_POST['start'])) {

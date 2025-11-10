@@ -1,4 +1,5 @@
 <?php
+
 // Enable error display for development
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -68,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+include ("index.html");
 ?>
 
 <!DOCTYPE html>
@@ -87,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   --success-green: #16a34a;
 }
 body {
-  background-color: var(--sidebar-blue);
+  background-color: var(--body-bg);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   display: flex;

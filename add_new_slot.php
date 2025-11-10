@@ -76,6 +76,7 @@ $result = $conn->query("SELECT COUNT(*) as total,
 $slotData = $result->fetch_assoc();
 $totalSlots = $slotData['total'] ?? 0;
 $availableSlots = $slotData['available'] ?? 0;
+include ("index.html");
 ?>
 
 <!DOCTYPE html>
@@ -109,7 +110,7 @@ $availableSlots = $slotData['available'] ?? 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 body {
-   background-color: var(--sidebar-blue); 
+   background-color:var(--body-bg); 
     color: var(--black);
     line-height: 1.6;
     min-height: 100vh;
@@ -247,38 +248,7 @@ input[type="number"]:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
-.btn-group {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-}
-.btn {
-    padding: 14px 25px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-}
-.btn-primary {
-    background: var(--secondary-blue);
-    color: var(--white);
-    flex: 1;
-}
-.btn-primary:hover {
-    background: var(--accent-blue);
-    transform: translateY(-2px);
-}
-.btn-secondary {
-    background: var(--light-gray);
-    color: var(--primary-blue);
-    border: 2px solid var(--medium-gray);
-}
-.btn-secondary:hover {
-    background: var(--medium-gray);
-    transform: translateY(-2px);
-}
+
 .btn-warning {
     background: var(--warning);
     color: var(--black);
