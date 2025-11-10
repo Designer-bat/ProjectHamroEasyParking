@@ -1,4 +1,4 @@
-?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -410,3 +410,89 @@
     </ul>
     <a href="logout.php" class="btn btn-primary">Logout</a>
 </div>
+<div class="main-content">
+    <nav class="navbar mb-4">
+        <a class="navbar-brand" href="#">Dashboard</a>
+    </nav>
+    <!-- Main content goes here -->
+</div>  
+<script>
+    // Theme Toggle Logic
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+    });
+
+    // Notification System Logic
+    const notificationBell = document.getElementById('notificationBell');
+    const notificationPanel = document.getElementById('notificationPanel');
+    const notificationList = document.getElementById('notificationList');
+    const notificationCount = document.getElementById('notificationCount');
+    const clearNotificationsBtn = document.getElementById('clearNotifications');
+
+    let notifications = [];
+
+    notificationBell.addEventListener('click', () => {
+        notificationPanel.classList.toggle('show');
+    });
+
+    clearNotificationsBtn.addEventListener('click', () => {
+        notifications = [];
+        renderNotifications();
+    });
+
+    function addNotification(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        notifications.unshift({ message, timestamp });
+        renderNotifications();
+        showToast(message);
+    }
+
+    function renderNotifications() {
+        notificationList.innerHTML = '';
+        notifications.forEach(notif => {
+            const li = document.createElement('li');
+            li.className = 'notification-item';
+            li.innerHTML = `
+                <div class="notification-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="notification-content">
+                    ${notif.message}
+                    <div class="notification-time">${notif.timestamp}</div>
+                </div>
+            `;
+            notificationList.appendChild(li);
+        });
+        notificationCount.textContent = notifications.length;
+    }
+
+    // Toast Logic
+    const toastContainer = document.getElementById('toastContainer');
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <div class="toast-icon"><i class="fas fa-info-circle"></i></div>
+            <div class="toast-content">${message}</div>
+            <button class="toast-close">&times;</button>
+        `;
+        toastContainer.appendChild(toast);
+
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            hideToast(toast);
+        });
+
+        setTimeout(() => {
+            hideToast(toast);
+        }, 5000);
+    }
+
+    function hideToast(toast) {
+        toast.classList.add('hide');
+        toast.addEventListener('animationend', () => {
+            toast.remove();
+        });
+    }
+</script>
+</body>
+</html> 
