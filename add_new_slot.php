@@ -102,6 +102,8 @@ include ("index.html");
     --error: #dc3545;
     --warning: #ffc107;
     --transition: all 0.3s ease;
+    --body-bg: #f8f9fa; /* Added body background variable */
+    --anim-ease: cubic-bezier(.2,.9,.2,1);
 }
 * {
     margin: 0;
@@ -115,6 +117,8 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     padding: 20px;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
 }
 .container {
     max-width: 1200px;
@@ -130,6 +134,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    animation: fadeInDown 500ms var(--anim-ease);
 }
 .header-content {
     flex: 1;
@@ -143,6 +148,9 @@ h1 {
 }
 h1 i {
     color: var(--secondary-blue);
+    display:inline-block;
+    transform-origin:center;
+    animation: icon-breathe 3s infinite;
 }
 .subtitle {
     font-size: 1rem;
@@ -164,11 +172,12 @@ h1 i {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    transition: var(--transition);
+    transition: transform 350ms var(--anim-ease), box-shadow 350ms var(--anim-ease);
+    animation: fadeInUp 450ms var(--anim-ease);
 }
 .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 .stat-card i {
     font-size: 2.5rem;
@@ -184,6 +193,9 @@ h1 i {
     font-size: 2.2rem;
     font-weight: 700;
     color: var(--primary-blue);
+    display:inline-block;
+    transform-origin:center;
+    animation: popIn 600ms var(--anim-ease);
 }
 .actions-container {
     display: grid;
@@ -196,6 +208,13 @@ h1 i {
     border-radius: 10px;
     padding: 30px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transform-origin:center;
+    transition: transform 320ms var(--anim-ease), box-shadow 320ms var(--anim-ease);
+    animation: fadeInUp 500ms var(--anim-ease);
+}
+.action-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 .card-header {
     display: flex;
@@ -215,6 +234,11 @@ h1 i {
     display: flex;
     align-items: center;
     justify-content: center;
+    transform: translateY(-2px);
+    transition: transform 400ms var(--anim-ease);
+}
+.card-header:hover i {
+    transform: translateY(-6px) rotate(-6deg);
 }
 .card-title {
     font-size: 1.5rem;
@@ -241,12 +265,54 @@ input[type="number"] {
     border: 2px solid var(--medium-gray);
     border-radius: 8px;
     font-size: 1rem;
-    transition: var(--transition);
+    transition: box-shadow 300ms var(--anim-ease), border-color 300ms var(--anim-ease), transform 200ms var(--anim-ease);
+    background: linear-gradient(180deg, #fff 0%, #fbfdff 100%);
 }
 input[type="number"]:focus {
     border-color: var(--secondary-blue);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Added button styles for consistency */
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: transform 220ms var(--anim-ease), box-shadow 220ms var(--anim-ease), background 220ms var(--anim-ease);
+    background: var(--medium-gray);
+    color: var(--primary-blue);
+    text-decoration: none;
+    will-change: transform;
+}
+.btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 18px rgba(0,0,0,0.06);
+}
+.btn:active {
+    transform: translateY(0) scale(0.99);
+}
+
+.btn-primary {
+    background: var(--secondary-blue);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+.btn-primary:hover {
+    background: var(--accent-blue);
+    color: var(--white);
+    transform: translateY(-4px) scale(1.01);
+}
+
+/* subtle pulsing on primary buttons to draw attention */
+.btn-primary.pulse {
+    animation: gentlePulse 2.4s infinite;
 }
 
 .btn-warning {
@@ -257,6 +323,8 @@ input[type="number"]:focus {
     background: #e00000ff;
     transform: translateY(-2px);
 }
+
+/* Alerts */
 .alert {
     padding: 15px;
     border-radius: 8px;
@@ -265,6 +333,7 @@ input[type="number"]:focus {
     display: flex;
     align-items: center;
     gap: 12px;
+    animation: slideFade 420ms var(--anim-ease);
 }
 .alert i {
     font-size: 1.3rem;
@@ -291,6 +360,54 @@ footer {
     font-size: 0.9rem;
     margin-top: 30px;
 }
+
+/* Small utility to stagger animations for children (set style="--delay: .2s") */
+.animated {
+    animation-duration: 520ms;
+    animation-fill-mode: both;
+    animation-timing-function: var(--anim-ease);
+    animation-name: fadeInUp;
+    animation-delay: var(--delay, 0s);
+}
+
+/* Keyframes */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px) scale(.995); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+    0% { transform: scale(.92); opacity: 0; }
+    60% { transform: scale(1.03); opacity: 1; }
+    100% { transform: scale(1); }
+}
+@keyframes gentlePulse {
+    0% { box-shadow: 0 6px 18px rgba(52,152,219,0.12); transform: translateY(-2px) scale(1); }
+    50% { box-shadow: 0 18px 36px rgba(52,152,219,0.06); transform: translateY(-3px) scale(1.01); }
+    100% { box-shadow: 0 6px 18px rgba(52,152,219,0.12); transform: translateY(-2px) scale(1); }
+}
+@keyframes slideFade {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes icon-breathe {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .animated, .stat-card, .action-card, .btn-primary.pulse, header, .alert, .stat-value, h1 i {
+        animation: none !important;
+        transition: none !important;
+    }
+    * { scroll-behavior: auto; }
+}
+
 @media (max-width: 768px) {
     .actions-container {
         grid-template-columns: 1fr;

@@ -1,5 +1,4 @@
 <?php
-include ("index.html");
 // ====================== CONFIGURATION ======================
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
@@ -71,6 +70,8 @@ if (isset($_POST['delete_id']) && ctype_digit($_POST['delete_id'])) {
 $stmt = $conn->prepare("SELECT * FROM vehicles ORDER BY entry_time DESC");
 $stmt->execute();
 $vehicles = $stmt->get_result();
+
+include ("index.html");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -244,8 +245,8 @@ tbody tr:hover {
 </head>
 <body>
 <div class="container">
-  <h2><i class="fas fa-car"></i> Vehicle Parked Records</h2>
-  <p>All vehicles currently parked in the facility</p>
+  <h2><i class="fas fa-car"></i> Records and History</h2>
+  <p>History of parked in the facility</p>
 
   <table>
     <thead>

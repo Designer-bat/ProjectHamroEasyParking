@@ -622,27 +622,6 @@ function usageToColor($use, $minUse, $maxUse) {
                 </div>
             </div>
         </div>
-
-        <!-- Parking Slot Status -->
-        <h5 class="mt-4 mb-3">Parking Slot Status</h5>
-        <div class="glass-table-container">
-            <?php if ($slots): while($row = $slots->fetch_assoc()) { ?>
-            <div class="slot-card">
-                <div class="slot-header">
-                    <div><strong><?= htmlspecialchars($row['slot_name']) ?></strong></div>
-                    <div>
-                        <?php if ($row['status'] == 'Available') { ?>
-                            <span class="status-available">Available</span>
-                        <?php } else { ?>
-                            <span class="status-occupied">Occupied</span>
-                        <?php } ?>
-                    </div>
-                </div>
-                <div class="slot-date">Modified: <?= date('d M Y, h:i A', time()) ?></div>
-            </div>
-            <?php } endif; ?>
-        </div>
-
         <!-- Slot Heatmap -->
         <h5 class="mt-4 mb-3">Slot Heatmap (Usage Frequency)</h5>
         <div class="heatmap-grid mb-5">
@@ -659,6 +638,33 @@ function usageToColor($use, $minUse, $maxUse) {
             <?php if (empty($heatmapRows)): ?>
                 <div class="text-muted">No slot usage data yet.</div>
             <?php endif; ?>
+        </div>
+        <!-- Parking Slot Status -->
+        <h5 class="mt-4 mb-3">Parking Slot Status</h5>
+        <div class="glass-table-container">
+            <?php if ($slots): while($row = $slots->fetch_assoc()) { ?>
+            <div class="slot-card">
+                <div class="slot-header">
+                    <div><strong><?= htmlspecialchars($row['slot_name']) ?></strong></div>
+                    <div>
+                        <?php
+                        switch ($row['status']) {
+                            case 'Available':
+                                echo '<span class="status-available">Available</span>';
+                                break;
+                            case 'Occupied':
+                                echo '<span class="status-occupied">Occupied</span>';
+                                break;
+                            default:
+                                echo '<span class="status-occupied">' . htmlspecialchars($row['status']) . '</span>';
+                                break;
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="slot-date">Modified: <?= date('d M Y, h:i A', time()) ?></div>
+            </div>
+            <?php } endif; ?>
         </div>
     </div>
 </main>

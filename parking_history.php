@@ -214,7 +214,7 @@ tbody tr:hover {
 <button class="toggle-dark" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
 
 <div class="card">
-  <h2><i class="fas fa-history"></i> Parking History</h2>
+  <h2><i class="card-title"></i> Parking Records and History</h2>
   <div class="table-container">
     <table>
       <thead>
@@ -261,23 +261,10 @@ tbody tr:hover {
       </tbody>
     </table>
   </div>
-</div>
-
-<!-- Back to Dashboard Button -->
+  <!-- Back to Dashboard Button -->
 <div style="text-align:center;">
   <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
 </div>
-
-<script>
-// Dark/Light mode toggle
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-}
-if (localStorage.getItem("darkMode") === "true") {
-  document.body.classList.add("dark");
-}
-</script>
-
+</div>
 </body>
 </html>

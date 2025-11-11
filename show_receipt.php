@@ -135,6 +135,12 @@ body {
   box-shadow: 0 6px 16px rgba(0,0,0,0.15);
   margin: 0 auto;
   max-width: 1100px;
+  animation: fadeInCard 0.8s var(--transition);
+}
+
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
 }
 
 .card-header {
@@ -144,6 +150,12 @@ body {
   margin-bottom: 25px;
   border-bottom: 2px solid var(--gray);
   padding-bottom: 15px;
+  animation: slideDownHeader 0.7s var(--transition);
+}
+
+@keyframes slideDownHeader {
+  from { opacity: 0; transform: translateY(-30px);}
+  to { opacity: 1; transform: translateY(0);}
 }
 
 .card-header i {
@@ -156,6 +168,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: popInIcon 0.6s var(--transition);
+}
+
+@keyframes popInIcon {
+  0% { transform: scale(0.5); opacity: 0;}
+  70% { transform: scale(1.1);}
+  100% { transform: scale(1); opacity: 1;}
 }
 
 .card-title {
@@ -172,6 +191,12 @@ body {
   overflow-x: auto;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  animation: fadeInTable 0.9s var(--transition);
+}
+
+@keyframes fadeInTable {
+  from { opacity: 0; transform: scale(0.98);}
+  to { opacity: 1; transform: scale(1);}
 }
 
 table {
@@ -197,6 +222,7 @@ td {
   padding: 12px 10px;
   border-bottom: 1px solid #ddd;
   vertical-align: middle;
+  transition: background 0.3s;
 }
 
 tbody tr:nth-child(even) {
@@ -205,6 +231,12 @@ tbody tr:nth-child(even) {
 
 tbody tr:hover {
   background: rgba(0,0,0,0.05);
+  animation: rowHover 0.3s;
+}
+
+@keyframes rowHover {
+  from { background: #f9f9f9;}
+  to { background: rgba(0,0,0,0.05);}
 }
 
 .status-badge {
@@ -212,16 +244,24 @@ tbody tr:hover {
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 500;
+  opacity: 0;
+  animation: badgeFadeIn 0.7s forwards;
+}
+
+@keyframes badgeFadeIn {
+  to { opacity: 1;}
 }
 
 .status-in-lot {
   background: rgba(40,167,69,0.1);
   color: var(--success);
+  animation-delay: 0.2s;
 }
 
 .status-exited {
   background: rgba(108,117,125,0.15);
   color: gray;
+  animation-delay: 0.2s;
 }
 
 .btn-back {
@@ -260,12 +300,12 @@ tbody tr:hover {
 </head>
 <body>
 
-<div class="card">
+<div style="text-align:center;" class="card">
   <div class="card-header">
     <i class="fas fa-car"></i>
     <div>
-      <h2 class="card-title">Vehicle Parked Records</h2>
-      <p class="card-description">All vehicles currently parked in the facility</p>
+      <h1 class="card-title"> Receipt Status </h1>
+      <p class="card-description">All vehicles park Receipt in the facility</p>
     </div>
   </div>
 
@@ -301,7 +341,7 @@ tbody tr:hover {
               <?php endif; ?>
             </td>
             <td>
-              <a href="?receipt=<?= $row['vehicle_id'] ?>" class="btn-back"><i class="fas fa-receipt"></i> Receipt</a>
+              <a href="?receipt=<?= $row['vehicle_id'] ?>" class="btn-back"></i> Receipt</a>
             </td>
           </tr>
           <?php endwhile; ?>
@@ -318,12 +358,10 @@ tbody tr:hover {
         <?php endif; ?>
       </tbody>
     </table>
-  </div>
-</div>
-
-<div style="text-align:center; margin-top:20px;">
+    </div>
+  <div style="text-align:center; margin-top:20px;">
   <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
 </div>
-
+</div>
 </body>
 </html>

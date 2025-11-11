@@ -102,16 +102,23 @@ $availableSlots = $slotData['available'] ?? 0;
         }
 
         body {
-           background-color: var(--body-bg);
+            background-color: var(--light-blue);
             color: var(--black);
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+            transition: background-color 0.5s ease;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         header {
@@ -124,6 +131,12 @@ $availableSlots = $slotData['available'] ?? 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: slideDown 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .header-content {
@@ -136,10 +149,24 @@ $availableSlots = $slotData['available'] ?? 0;
             display: flex;
             align-items: center;
             gap: 15px;
+            animation: fadeInLeft 0.7s;
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-40px);}
+            to { opacity: 1; transform: translateX(0);}
         }
 
         h1 i {
             color: var(--secondary-blue);
+            animation: bounceIn 1s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.2); opacity: 1; }
+            80% { transform: scale(0.95);}
+            100% { transform: scale(1);}
         }
 
         .subtitle {
@@ -165,17 +192,30 @@ $availableSlots = $slotData['available'] ?? 0;
             align-items: center;
             text-align: center;
             transition: var(--transition);
+            animation: fadeInUp 0.7s;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-5px) scale(1.03);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
         }
 
         .stat-card i {
             font-size: 2.5rem;
             margin-bottom: 15px;
             color: var(--secondary-blue);
+            animation: pulse 1.2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1);}
+            to { transform: scale(1.15);}
         }
 
         .stat-title {
@@ -202,6 +242,7 @@ $availableSlots = $slotData['available'] ?? 0;
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            animation: fadeInUp 0.8s;
         }
 
         .card-header {
@@ -211,6 +252,7 @@ $availableSlots = $slotData['available'] ?? 0;
             margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 2px solid var(--medium-gray);
+            animation: fadeInLeft 0.7s;
         }
 
         .card-header i {
@@ -223,6 +265,7 @@ $availableSlots = $slotData['available'] ?? 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: bounceIn 1s;
         }
 
         .card-title {
@@ -238,6 +281,7 @@ $availableSlots = $slotData['available'] ?? 0;
 
         .form-group {
             margin-bottom: 25px;
+            animation: fadeIn 0.7s;
         }
 
         label {
@@ -261,6 +305,12 @@ $availableSlots = $slotData['available'] ?? 0;
             border-color: var(--secondary-blue);
             outline: none;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            animation: inputFocus 0.4s;
+        }
+
+        @keyframes inputFocus {
+            from { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);}
+            to { box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);}
         }
 
         .btn-group {
@@ -271,11 +321,22 @@ $availableSlots = $slotData['available'] ?? 0;
         .btn-warning {
             background: var(--warning);
             color: var(--black);
+            transition: var(--transition);
         }
 
         .btn-warning:hover {
             background: #e00000ff;
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.05);
+            transition: var(--transition);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateY(-2px) scale(1.05) translateX(0);}
+            25% { transform: translateY(-2px) scale(1.05) translateX(-3px);}
+            50% { transform: translateY(-2px) scale(1.05) translateX(3px);}
+            75% { transform: translateY(-2px) scale(1.05) translateX(-2px);}
+            100% { transform: translateY(-2px) scale(1.05) translateX(0);}
         }
 
         .alert {    
@@ -286,10 +347,12 @@ $availableSlots = $slotData['available'] ?? 0;
             display: flex;
             align-items: center;
             gap: 12px;
+            animation: fadeIn 0.7s;
         }
 
         .alert i {
             font-size: 1.3rem;
+            animation: pulse 1.2s infinite alternate;
         }
 
         .success {
@@ -316,6 +379,7 @@ $availableSlots = $slotData['available'] ?? 0;
             color: var(--dark-gray);
             font-size: 0.9rem;
             margin-top: 30px;
+            animation: fadeIn 0.7s;
         }
 
         @media (max-width: 768px) {

@@ -1,5 +1,5 @@
 <?php
-include ("index.html");
+include "index.html";
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 require_once "config_secure.php"; // encryption/decryption functions
 
@@ -52,120 +52,190 @@ if ($result && $row = $result->fetch_assoc()) {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --primary-blue: #000000ff;
+  --primary-blue: #1a6ca6;
   --secondary-blue: #3498db;
-  --accent-blue: #1a6ca6;
-  --white: #ffffff;
+  --accent-blue: #0d3c61;
+  --white: #fff;
   --black: #212529;
   --light-gray: #f8f9fa;
   --medium-gray: #e9ecef;
   --dark-gray: #6c757d;
   --success: #28a745;
   --error: #dc3545;
-  --transition: all 0.3s ease;
+  --shadow: 0 8px 32px rgba(26,108,166,0.08);
+  --transition: all 0.3s cubic-bezier(.4,0,.2,1);
 }
 
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 body {
-  background-color: var(--body-bg);
+  background: linear-gradient(120deg, var(--light-gray) 0%, var(--medium-gray) 100%);
   color: var(--black);
   min-height: 100vh;
-  padding: 20px;
+  padding: 24px;
+  animation: fadeBg 1.2s;
 }
 
-.container { max-width: 1200px; margin: 0 auto; }
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
 
 h2 {
   font-weight: 700;
   color: var(--primary-blue);
   text-align: center;
-  margin-bottom: 30px;
-  animation: fadeInDown 0.8s ease-out;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+  animation: fadeInDown 0.8s;
 }
 
 .card {
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  margin-bottom: 30px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 32px;
   transition: var(--transition);
+  animation: fadeSlide 1s;
 }
 
-.card:hover { transform: translateY(-3px); }
+.card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 16px 40px rgba(26,108,166,0.13);
+}
 
-.card h5 { font-weight: 500; color: var(--primary-blue); }
+.card h5 {
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin-bottom: 10px;
+}
+
+.card-text {
+  font-size: 2.1rem;
+  color: var(--success);
+  font-weight: 700;
+  letter-spacing: 1px;
+  animation: pulse 1.2s infinite alternate;
+}
 
 .table-container {
   overflow-x: auto;
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-  background: rgba(255,255,255,0.85);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  padding: 20px;
-  animation: fadeSlide 1s ease-in-out;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.92);
+  box-shadow: var(--shadow);
+  padding: 22px 18px;
+  animation: fadeSlide 1.2s;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  background: transparent;
 }
 
-thead { background: var(--primary-blue); color: var(--white); }
+thead {
+  background: linear-gradient(90deg, var(--primary-blue) 60%, var(--secondary-blue) 100%);
+  color: var(--white);
+  animation: fadeInDown 1s;
+}
 
 th, td {
-  padding: 14px 18px;
+  padding: 15px 20px;
   text-align: center;
   border-bottom: 1px solid var(--medium-gray);
+  vertical-align: middle;
 }
 
 tbody tr {
   transition: var(--transition);
+  animation: rowFadeIn 0.7s;
 }
 
 tbody tr:hover {
-  background-color: rgba(52, 152, 219, 0.08);
+  background-color: rgba(26,108,166,0.07);
   transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(26,108,166,0.07);
 }
 
 .status-badge {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 500;
-  font-size: 0.85rem;
+  padding: 7px 18px;
+  border-radius: 22px;
+  font-weight: 600;
+  font-size: 0.92rem;
   display: inline-block;
   transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(220,53,69,0.08);
 }
 
-.status-exited { background-color: rgba(220,53,69,0.15); color: var(--error); }
+.status-exited {
+  background: linear-gradient(90deg, rgba(220,53,69,0.18) 60%, rgba(220,53,69,0.10) 100%);
+  color: var(--error);
+  letter-spacing: 0.5px;
+}
 
 .btn-back {
   background: var(--primary-blue);
   color: var(--white);
-  padding: 12px 25px;
-  border-radius: 8px;
-  font-weight: 500;
+  padding: 13px 28px;
+  border-radius: 9px;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 24px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(26,108,166,0.10);
   transition: var(--transition);
+  text-decoration: none;
+  font-size: 1rem;
 }
 
 .btn-back:hover {
   background: var(--accent-blue);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(26,108,166,0.18);
 }
 
-@keyframes fadeSlide { from {opacity:0; transform: translateY(20px);} to {opacity:1; transform: translateY(0);} }
-@keyframes fadeInDown { from {opacity:0; transform: translateY(-20px);} to {opacity:1; transform: translateY(0);} }
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(30px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+@keyframes rowFadeIn {
+  from { opacity: 0; transform: translateY(10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeBg {
+  from { background: var(--white); }
+  to { background: linear-gradient(120deg, var(--light-gray) 0%, var(--medium-gray) 100%);}
+}
+@keyframes pulse {
+  0% { color: var(--success); text-shadow: 0 0 0px var(--success);}
+  100% { color: #34c759; text-shadow: 0 0 8px #34c759;}
+}
 
-@media (max-width: 768px) {
-  h2 { font-size: 1.7rem; }
-  th, td { padding: 10px 12px; }
+@media (max-width: 900px) {
+  .container { max-width: 98vw; }
+  th, td { padding: 10px 8px; font-size: 0.95rem; }
+  .card { padding: 18px 10px; }
+  .table-container { padding: 12px 4px; }
+}
+
+@media (max-width: 600px) {
+  h2 { font-size: 1.3rem; }
+  .card-text { font-size: 1.3rem; }
+  th, td { padding: 7px 4px; font-size: 0.85rem; }
+  .btn-back { padding: 10px 16px; font-size: 0.95rem; }
 }
 </style>
 </head>

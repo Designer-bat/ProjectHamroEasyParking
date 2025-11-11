@@ -284,5 +284,8 @@ include ("index.html");
         </tbody>
       </table>
     </div>
+    <div style="text-align:center;">
+  <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</div>
 </body>
 </html>
