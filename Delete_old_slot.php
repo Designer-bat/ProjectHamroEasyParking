@@ -114,6 +114,12 @@ $availableSlots = $slotData['available'] ?? 0;
             max-width: 1200px;
             margin: 0 auto;
             animation: fadeIn 0.5s ease;
+            display: flex;
+            justify-content: flex-start; /* keep content to the left */
+            align-items: flex-start;     /* keep content at the top */
+            min-height: 100vh;
+            padding-left: 260px; /* width of sidebar */
+            padding-top: 30px; 
         }
 
         @keyframes fadeIn {
@@ -434,10 +440,9 @@ $availableSlots = $slotData['available'] ?? 0;
                     </div>
                 </form>
             </div>
-        </div>
-        <a href="index.php" class="btn btn-primary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+             <a href="index.php" class="btn btn-primary">
+              <i class="fas fa-arrow-left"></i> Back to Dashboard
+             </a>
     </div>
 </body>
-</html>
+</html> 

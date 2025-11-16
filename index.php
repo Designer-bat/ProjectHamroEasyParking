@@ -280,6 +280,33 @@ function usageToColor($use, $minUse, $maxUse) {
 
         .sidebar .icon { width: 20px; text-align: center; }
 
+        .sidebar {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    height: 100%;
+    width: 240px;
+    background-color: var(--sidebar-blue);
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* change from space-between */
+    z-index: 1000;
+    color: white;
+    overflow: hidden; /* hide extra content outside */
+}
+
+/* Make the menu scrollable */
+.sidebar .nav-menu {
+    list-style: none;
+    padding: 0; 
+    margin: 0 0 20px 0;
+    overflow-y: auto;       /* enable vertical scrolling */
+    flex-grow: 1;           /* take remaining vertical space */
+    max-height: calc(100vh - 120px); /* adjust according to logo + clock + logout height */
+}
+
+
         /* Theme toggle */
         .theme-toggle {
             position: fixed; right: 16px; top: 16px; z-index: 2000;
@@ -540,6 +567,7 @@ function usageToColor($use, $minUse, $maxUse) {
     setInterval(updateClock, 1000);
   </script>
     <ul class="nav-menu">
+         <li><a href="search.php"><span class="icon"><i class="fas fa-search"></i></span>Search</a></li>
         <li><a href="index.php"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
         <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-car"></i></span> Add Parking Slot</a></li>
         <li><a href="add_vehicle.php"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Vehicle Entry</a></li>
@@ -550,6 +578,7 @@ function usageToColor($use, $minUse, $maxUse) {
         <li><a href="parking_history_delete.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete History</a></li>
         <li><a href="Delete_old_slot.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete Parking Slot</a></li>
         <li><a href="emplye_log.php"><span class="icon"><i class="fas fa-plus-circle"></i></span>Employee log</a></li>
+       
 
     </ul>
     <a href="logout.php" class="btn btn-primary">Logout</a>
