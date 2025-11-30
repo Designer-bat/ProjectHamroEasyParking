@@ -442,8 +442,8 @@ if ($conn->connect_error) {
 #guide-answer {
     padding: 12px;
     font-size: 14px;
-    border-top: 1px solid #ddd;
-    background: #fafafa;
+    border-top: 1px solid #000000ff;
+    background: #000000ff;
     display: none;
 }
 
@@ -494,7 +494,7 @@ if ($conn->connect_error) {
 
     <div id="guide-box">
         <div id="guide-header">
-            Smart Parking Guide
+            Smart AI Parking Guide
         </div>
 
         <div id="guide-content">
