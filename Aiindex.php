@@ -31,7 +31,7 @@ if ($conn->connect_error) {
             --white: #ffffff;
         }
         body.dark-mode {
-            --sidebar-blue: #0f1f4a;
+             --sidebar-blue: #0f1f4a;
             --primary-blue: #60a5fa;
             --card-bg: #111827;
             --text-color: #e5e7eb;
@@ -445,7 +445,13 @@ if ($conn->connect_error) {
     border-top: 1px solid #000000ff;
     background: #000000ff;
     display: none;
-}
+} .ai-msg {margin:8px 0;padding:8px 12px;border-radius:10px;font-size:14px;line-height:1.4;max-width:80%;word-wrap:break-word;}
+        .ai-bot {background:var(--primary-blue);color:white;}
+        .ai-user {background:var(--primary-blue);margin-left:auto;}
+        .typing-indicator {display:flex;gap:5px;padding:8px 12px;}
+        .typing-indicator div {width:6px;height:6px;background:#999;border-radius:50%;animation:bounce 1.2s infinite;}
+        @keyframes bounce {0%{transform:translateY(0);opacity:.4}50%{transform:translateY(-6px);opacity:1}100%{transform:translateY(0);opacity:.4}}
+        #aiChatBox button {margin:4px 2px; padding:6px 10px; border:none; border-radius:6px; cursor:pointer; background:#dfe9ff;}
 
 
 </style>
@@ -484,44 +490,29 @@ if ($conn->connect_error) {
   </div>
 
 <!-- Guide / Help Chatbot for Parking System -->
-<div id="guide-bot">
- <div id="guide-icon">
-    <img src="myAi.png" alt="AI Bot" 
-         style="width:65px; height:65px; border-radius:50%; object-fit:cover;">
+<div id="aiToggle" style="position:fixed;bottom:30px;right:30px;z-index:9999;cursor:pointer;">
+    <img src="myAi.png" style="width:65px;height:65px;border-radius:50%;" alt="AI Bot">
 </div>
 
+<div id="aiChatBox" style="display:none;position:fixed;bottom:100px;right:30px;width:350px;background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.2);border:1px solid #ddd;overflow:hidden;z-index:9999;">
+    <div style="background:#3b82f6;color:white;padding:10px;display:flex;justify-content:space-between;font-weight:bold;">
+        Parking Assistant
+        <span id="aiClose" style="cursor:pointer;">✖</span>
+    </div>
 
+    <div id="aiMessages" style="padding:10px;max-height:300px;overflow-y:auto;"></div>
 
-    <div id="guide-box">
-        <div id="guide-header">
-            Smart AI Parking Guide
-        </div>
+    <div id="aiSuggestions" style="padding:10px;border-top:1px solid #eee;">
+        <button onclick="sendQuestion('How are parking slots assigned?')">Slot Allocation</button>
+        <button onclick="sendQuestion('How does billing work?')">Billing</button>
+        <button onclick="sendQuestion('How does the Exit system work?')">Exit Process</button>
+        <button onclick="sendQuestion('How does QR Code work?')">QR Code</button>
+        <button onclick="sendQuestion('Dashboard Information')">Dashboard Info</button>
+    </div>
 
-        <div id="guide-content">
-            <p>Hello Admin! How can I help you?</p>
-
-            <button class="guide-btn" data-answer="Slots are auto-assigned from the first available free slot in parking_slots table.">
-                How are parking slots assigned?
-            </button>
-
-            <button class="guide-btn" data-answer="Billing = ₹10 per hour. Duration is calculated from entry_time to exit_time and stored in vehicles table.">
-                How does billing work?
-            </button>
-
-            <button class="guide-btn" data-answer="When a vehicle exits, its slot becomes AVAILABLE and vehicle status is set to EXITED.">
-                How does the Exit system work?
-            </button>
-
-            <button class="guide-btn" data-answer="QR code is generated from vehicle number and linked to DB records.">
-                How does QR Code work?
-            </button>
-
-            <button class="guide-btn" data-answer="Dashboard data is fetched from vehicles & parking_slots tables to show totals and income.">
-                Dashboard Information
-            </button>
-        </div>
-
-        <div id="guide-answer"></div>
+    <div style="display:flex;border-top:1px solid #ddd;">
+        <input type="text" id="aiUserInput" placeholder="Type your question..." style="flex:1;padding:8px;border:none;outline:none;">
+        <button onclick="askAI()" style="background:#3b82f6;color:white;border:none;padding:8px 12px;">Send</button>
     </div>
 </div>
 
@@ -562,12 +553,6 @@ if ($conn->connect_error) {
 </div>
 
 <script>
-    // Theme Toggle Logic
-    const themeToggle = document.getElementById('themeToggle');
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-    });
-
     // Notification System Logic
     const notificationBell = document.getElementById('notificationBell');
     const notificationPanel = document.getElementById('notificationPanel');
@@ -609,11 +594,8 @@ if ($conn->connect_error) {
         });
         notificationCount.textContent = notifications.length;
     }
-
-    // Toast Logic
-    const toastContainer = document.getElementById('toastContainer');
-
     function showToast(message) {
+        const toastContainer = document.getElementById('toastContainer');
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.innerHTML = `
@@ -623,34 +605,96 @@ if ($conn->connect_error) {
         `;
         toastContainer.appendChild(toast);
 
-        toast.querySelector('.toast-close').addEventListener('click', () => {
-            hideToast(toast);
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.addEventListener('click', () => {
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 300);
         });
 
         setTimeout(() => {
-            hideToast(toast);
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 300);
         }, 5000);
     }
+</script>
+<!-- ===================== AI BOT SCRIPT ===================== -->
+<script>
+    /* ===== EXISTING DASHBOARD SCRIPTS ===== */
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); });
+    // ... keep all your existing notification & clock scripts ...
 
-    function hideToast(toast) {
-        toast.classList.add('hide');
-        toast.addEventListener('animationend', () => {
-            toast.remove();
-        });
+    /* ===== AI BOT SCRIPT ===== */
+    const aiToggle = document.getElementById("aiToggle");
+    const aiBox = document.getElementById("aiChatBox");
+    const aiClose = document.getElementById("aiClose");
+
+    aiToggle.onclick = () => aiBox.style.display='block';
+    aiClose.onclick = () => aiBox.style.display='none';
+
+    function sendQuestion(text){
+        document.getElementById("aiUserInput").value = text;
+        askAI();
     }
 
-document.getElementById("guide-icon").onclick = function () {
-    let box = document.getElementById("guide-box");
-    box.style.display = (box.style.display === "block") ? "none" : "block";
-};
+    function askAI(){
+        const input = document.getElementById("aiUserInput");
+        const msg = input.value.trim();
+        if(!msg) return;
+        addMessage(msg,"ai-user");
+        input.value = "";
 
-document.querySelectorAll(".guide-btn").forEach(btn => {
-    btn.onclick = function () {
-        let answerBox = document.getElementById("guide-answer");
-        answerBox.innerHTML = this.dataset.answer;
-        answerBox.style.display = "block";
-    };
-});
+        const typing = document.createElement("div");
+        typing.className="typing-indicator";
+        typing.innerHTML="<div></div><div></div><div></div>";
+        document.getElementById("aiMessages").appendChild(typing);
+        document.getElementById("aiMessages").scrollTop = document.getElementById("aiMessages").scrollHeight;
+
+        setTimeout(()=>{
+            typing.remove();
+            const reply = getAIResponse(msg);
+            addMessageAnimated(reply,"ai-bot");
+        },1000 + Math.random()*1000);
+    }
+
+    function addMessage(text,type){
+        const chat = document.getElementById("aiMessages");
+        const div = document.createElement("div");
+        div.className = "ai-msg " + type;
+        div.textContent = text;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addMessageAnimated(text,type){
+        const chat = document.getElementById("aiMessages");
+        const div = document.createElement("div");
+        div.className = "ai-msg " + type;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+
+        let i=0;
+        function typeChar(){
+            if(i<text.length){
+                div.textContent += text.charAt(i);
+                i++;
+                chat.scrollTop = chat.scrollHeight;
+                setTimeout(typeChar,35);
+            }
+        }
+        typeChar();
+    }
+
+    function getAIResponse(q){
+        q = q.toLowerCase();
+        if(q.includes("slot")) return "Slots are auto-assigned from the first available free slot in parking_slots table.";
+        if(q.includes("billing")) return "Billing = ₹10 per hour. Duration is calculated from entry_time to exit_time in vehicles table.";
+        if(q.includes("exit")) return "When a vehicle exits, its slot becomes AVAILABLE and vehicle status is set to EXITED.";
+        if(q.includes("qr")) return "QR code is generated from vehicle number and linked to DB records.";
+        if(q.includes("dashboard") || q.includes("information")) return "Dashboard data is fetched from vehicles & parking_slots tables to show totals and income.";
+        if(q.includes("hello") || q.includes("hi")) return "Hello Admin! How can I assist you today?";
+        return "Sorry, I don’t have information about that yet. Try asking about billing, slots, exit process, or QR codes.";
+    }
 </script>
 
 </body>

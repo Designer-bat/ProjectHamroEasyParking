@@ -570,6 +570,7 @@ function usageToColor($use, $minUse, $maxUse) {
     setInterval(updateClock, 1000);
   </script>
     <ul class="nav-menu">
+        
          <li><a href="search.php"><span class="icon"><i class="fas fa-search"></i></span>Search</a></li>
         <li><a href="index.php"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
         <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-car"></i></span> Add Parking Slot</a></li>
