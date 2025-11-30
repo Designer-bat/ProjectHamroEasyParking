@@ -46,7 +46,7 @@ if (!$vehicles) {
 function maskOwnerName($hashed) {
     return substr($hashed, 0, 6) . "****" . substr($hashed, -4);
 }
-include ("index.html");
+include ("Aiindex.php");
 ?>
 
 
@@ -62,7 +62,7 @@ include ("index.html");
     body {
       background-color: var(--body-bg);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #111827;
+      color: #2563eb;
       margin: 0;
       padding: 0;
       display: flex;
@@ -97,7 +97,7 @@ include ("index.html");
 
     .card-header h2 {
       font-size: 1.5rem;
-      color: #0f172a;
+      color:#2563eb;
       margin: 0;
     }
 
@@ -123,7 +123,7 @@ include ("index.html");
     }
 
     thead {
-      background: #0f172a;
+      background: #2563eb;
       color: #fff;
     }
 
@@ -186,7 +186,7 @@ include ("index.html");
     }
 
     .btn-back {
-      background: #0f172a;
+      background: #2563eb;
       color: #fff;
       text-decoration: none;
       padding: 12px 25px;

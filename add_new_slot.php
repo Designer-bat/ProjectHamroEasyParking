@@ -1,5 +1,5 @@
 <?php
-include("index.html");
+include("Aiindex.php");
 // Database connection
 $conn = new mysqli("localhost", "root", "", "parking_system");
 if ($conn->connect_error) {
@@ -85,7 +85,7 @@ $availableSlots = $slotData['available'] ?? 0;
 :root {
     --sidebar-blue: #1e3a8a;
     --primary-blue: #2c3e50;
-    --secondary-blue: #3498db;
+    --secondary-blue: #2563eb;
     --accent-blue: #1a6ca6;
     --light-blue: #ecf0f1;
     --white: #ffffff;
@@ -176,6 +176,10 @@ body {
 
 /* ======================= ACTION CARD ======================= */
 .actions-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
     display: grid;
     grid-template-columns: 1fr;
     gap: 30px;
@@ -183,11 +187,11 @@ body {
 }
 
 .action-card {
+    align-self: center;
     background: var(--white);
     border-radius: 10px;
     padding: 30px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 320ms var(--anim-ease), box-shadow 320ms var(--anim-ease);
 }
 
 .action-card:hover {

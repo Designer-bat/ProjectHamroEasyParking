@@ -1,6 +1,6 @@
 <?php
-
-session_start();
+include 'Aiindex.php';
+include 'auth_check.php'; // session and auth check
 
 // Enable errors for development
 ini_set('display_errors', 1);
@@ -53,7 +53,7 @@ if (!empty($_GET['q'])) {
     $stmt->execute();
     $results = $stmt->get_result();
 }
-include 'index.html';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,15 +67,19 @@ include 'index.html';
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .search-card {
+            width: 1000px;
+            height: 200px;
             margin-top: 50px;
             padding: 30px;
             border-radius: 12px;
             background: #fff;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 600px;
+        
         }
         .table-container {
+            width: 1000px;
+            height: 200px;
+            margin-top: 50px;
             margin-top: 30px;
             background: #fff;
             border-radius: 10px;
@@ -118,7 +122,7 @@ include 'index.html';
         <h3 class="mb-4 text-center">🔍 Search Parking Entries</h3>
         <form method="GET" class="d-flex">
             <input type="text" name="q" value="<?= htmlspecialchars($query_text) ?>"
-                   class="form-control me-2" placeholder="Search vehicle number, owner, slot..." required>
+                   class="form-control me-2" placeholder="Search vehicle, owner, slot..." required>
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
     </div>

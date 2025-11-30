@@ -1,7 +1,8 @@
 <?php
-include ("index.html");
+include ("Aiindex.php");
 session_start();
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
+include 'auth_check.php'; // session and auth check
 include 'config_secure.php'; // encryption/decryption functions
 
 if ($conn->connect_error) {
@@ -57,7 +58,7 @@ function maskOwnerName($hashed) {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --primary: #2c3e50;
+  --primary: #2563eb;
   --secondary: #3498db;
   --success: #28a745;
   --danger: #dc3545;

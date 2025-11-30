@@ -1,6 +1,6 @@
 <?php
 
-include ("index.html");
+include ("Aiindex.php");
 // Database connection
 $conn = new mysqli("localhost", "root", "", "parking_system");
 if ($conn->connect_error) {
@@ -237,6 +237,10 @@ $availableSlots = $slotData['available'] ?? 0;
         }
 
         .actions-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;

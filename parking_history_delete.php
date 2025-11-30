@@ -71,7 +71,7 @@ $stmt = $conn->prepare("SELECT * FROM vehicles ORDER BY entry_time DESC");
 $stmt->execute();
 $vehicles = $stmt->get_result();
 
-include ("index.html");
+include ("Aiindex.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -88,7 +88,7 @@ body {
   margin: 0;
   padding: 40px 20px;
   color: #333;
-  min-height: 100vh;
+  min-height: 100vh;  
 }
 
 /* ====================== CONTAINER ====================== */
@@ -138,7 +138,7 @@ table {
 }
 
 thead {
-  background-color: #1e293b;
+  background-color: #2563eb;
   color: #ffffff;
 }
 
@@ -209,7 +209,7 @@ tbody tr:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #1e293b;
+  background-color: #2563eb;
   color: #fff;
   padding: 12px 20px;
   border-radius: 8px;
@@ -219,7 +219,7 @@ tbody tr:hover {
   transition: all 0.3s ease;
 }
 .btn-back:hover {
-  background-color: #334155;
+  background-color: #1957adff;
   transform: translateY(-2px);
 }
 

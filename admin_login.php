@@ -300,6 +300,70 @@ body{
   *{ animation: none !important; transition: none !important; }
   #preloader{ display:none !important; }
 }
+
+#guide-icon {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 22px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 9999;
+}
+
+#guide-box {
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    width: 300px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+#guide-header {
+    background:  rgba(37,99,235,0.85);
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#guide-content {
+    padding: 15px;
+}
+
+.guide-btn {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: #f1f1f1;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.guide-btn:hover {
+    background: #e2e2e2;
+}
+
+#guide-answer {
+    padding: 12px;
+    font-size: 14px;
+    border-top: 1px solid #ddd;
+    background: #fafafa;
+    display: none;
+}
+
 </style>
 </head>
 <body>
@@ -364,6 +428,46 @@ body{
     </div>
   </div>
 
+  <!-- Guide / Help Chatbot for Parking System -->
+<div id="guide-bot">
+     <div id="guide-icon"> 
+    <img src="myAi.png" alt="AI Bot" 
+         style="width:65px; height:65px; border-radius:50%; object-fit:cover;">
+</div>
+<div id="guide-box">
+        <div id="guide-header">
+            Smart Parking Guide
+        </div>
+
+        <div id="guide-content">
+            <p>Hello Admin! How can I help you?</p>
+
+            <button class="guide-btn" data-answer="Slots are auto-assigned from the first available free slot in parking_slots table.">
+                How are parking slots assigned?
+            </button>
+
+            <button class="guide-btn" data-answer="Billing = ₹10 per hour. Duration is calculated from entry_time to exit_time and stored in vehicles table.">
+                How does billing work?
+            </button>
+
+            <button class="guide-btn" data-answer="When a vehicle exits, its slot becomes AVAILABLE and vehicle status is set to EXITED.">
+                How does the Exit system work?
+            </button>
+
+            <button class="guide-btn" data-answer="QR code is generated from vehicle number and linked to DB records.">
+                How does QR Code work?
+            </button>
+
+            <button class="guide-btn" data-answer="Dashboard data is fetched from vehicles & parking_slots tables to show totals and income.">
+                Dashboard Information
+            </button>
+        </div>
+
+        <div id="guide-answer"></div>
+    </div>
+</div>
+
+
   <script>
     // Hide loader after page fully loads
     window.addEventListener("load", function(){
@@ -374,8 +478,20 @@ body{
     function showLoader() {
       document.getElementById("preloader").classList.remove("hide");
     }
-  </script>
 
+document.getElementById("guide-icon").onclick = function () {
+    let box = document.getElementById("guide-box");
+    box.style.display = (box.style.display === "block") ? "none" : "block";
+};
+
+document.querySelectorAll(".guide-btn").forEach(btn => {
+    btn.onclick = function () {
+        let answerBox = document.getElementById("guide-answer");
+        answerBox.innerHTML = this.dataset.answer;
+        answerBox.style.display = "block";
+    };
+});
+</script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

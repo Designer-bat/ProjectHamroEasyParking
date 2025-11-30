@@ -149,7 +149,7 @@ function usageToColor($use, $minUse, $maxUse) {
     <title>Parking Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+<style>
         :root {
             --sidebar-blue: #1e3a8a;
             --primary-blue: #3b82f6;
@@ -173,7 +173,10 @@ function usageToColor($use, $minUse, $maxUse) {
             color: var(--text-color);
             margin: 0;
         }
-
+        .body.scroll-list__wrper {
+            overflow-y: scroll;
+            width: auto
+        }
         .sidebar {
             position: fixed;
             top: 0; left: 0;
@@ -252,7 +255,7 @@ function usageToColor($use, $minUse, $maxUse) {
             font-size: 2rem; font-weight: 700;
         }
 
-        .glass-table-container { margin-top: 20px; }
+        .glass-table-container { margin-top: 50px; }
 
         .slot-card {
             background: var(--white);
@@ -281,30 +284,30 @@ function usageToColor($use, $minUse, $maxUse) {
         .sidebar .icon { width: 20px; text-align: center; }
 
         .sidebar {
-    position: fixed;
-    top: 0; 
-    left: 0;
-    height: 100%;
-    width: 240px;
-    background-color: var(--sidebar-blue);
-    padding: 20px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* change from space-between */
-    z-index: 1000;
-    color: white;
-    overflow: hidden; /* hide extra content outside */
-}
+            position: fixed;
+            top: 0; 
+            left: 0;
+            height: 100%;
+            width: 240px;
+            background-color: var(--sidebar-blue);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* change from space-between */
+            z-index: 1000;
+            color: white;
+            overflow: hidden; /* hide extra content outside */
+        }
 
 /* Make the menu scrollable */
-.sidebar .nav-menu {
-    list-style: none;
-    padding: 0; 
-    margin: 0 0 20px 0;
-    overflow-y: auto;       /* enable vertical scrolling */
-    flex-grow: 1;           /* take remaining vertical space */
-    max-height: calc(100vh - 120px); /* adjust according to logo + clock + logout height */
-}
+        .sidebar .nav-menu {
+            list-style: none;
+            padding: 0; 
+            margin: 0 0 20px 0;
+            overflow-y: auto;       /* enable vertical scrolling */
+            flex-grow: 1;           /* take remaining vertical space */
+            max-height: calc(100vh - 120px); /* adjust according to logo + clock + logout height */
+        }
 
 
         /* Theme toggle */
@@ -485,33 +488,33 @@ function usageToColor($use, $minUse, $maxUse) {
             to { transform: translateX(100%); opacity: 0; }
         }
 
-        /* Basic center + look */
-.clock {
-  background: rgba(255,255,255,0.06);
-  padding: 16px 20px;   /* smaller padding */
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(2,6,23,0.5);
-  text-align: center;
-}
+                /* Basic center + look */
+        .clock {
+        background: rgba(255,255,255,0.06);
+        padding: 16px 20px;   /* smaller padding */
+        border-radius: 10px;
+        box-shadow: 0 6px 20px rgba(2,6,23,0.5);
+        text-align: center;
+        }
 
-.time {
-  font-size: 32px;      /* reduced from 56px */
-  letter-spacing: 1px;
-  font-weight: 600;
-  margin: 0;
-}
+        .time {
+        font-size: 32px;      /* reduced from 56px */
+        letter-spacing: 1px;
+        font-weight: 600;
+        margin: 0;
+        }
 
-.date {
-  margin-top: 6px;
-  font-size: 12px;      /* smaller text */
-  color: rgba(230,238,248,0.75);
-}
+        .date {
+        margin-top: 6px;
+        font-size: 12px;      /* smaller text */
+        color: rgba(230,238,248,0.75);
+        }
 
-/* small screens */
-@media (max-width:220px){
-  .time { font-size: 18px; }
-  .clock { padding: 6px 4px; }
-}
+        /* small screens */
+        @media (max-width:220px){
+        .time { font-size: 18px; }
+        .clock { padding: 6px 4px; }
+        }
 
 </style>
 </head>

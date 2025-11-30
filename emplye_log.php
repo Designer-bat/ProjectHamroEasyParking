@@ -1,5 +1,5 @@
 <?php
-include ("index.html");
+include ("Aiindex.php");
 $conn = new mysqli("localhost", "root", "", "employee_log");
 
 if (isset($_POST['start'])) {
@@ -50,7 +50,7 @@ $row = $result->fetch_assoc();
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #ffffffff 100%);
             color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;

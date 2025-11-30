@@ -1,5 +1,6 @@
 <?php
-include "index.html";
+include "Aiindex.php";
+include "auth_check.php"; // session and auth check
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 require_once "config_secure.php"; // encryption/decryption functions
 
@@ -52,18 +53,17 @@ if ($result && $row = $result->fetch_assoc()) {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --primary-blue: #1a6ca6;
-  --secondary-blue: #3498db;
-  --accent-blue: #0d3c61;
-  --white: #fff;
-  --black: #212529;
-  --light-gray: #f8f9fa;
-  --medium-gray: #e9ecef;
-  --dark-gray: #6c757d;
-  --success: #28a745;
-  --error: #dc3545;
-  --shadow: 0 8px 32px rgba(26,108,166,0.08);
-  --transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  --primary: #2563eb;
+  --secondary: #1e40af;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --light: #f8fafc;
+  --dark: #1e293b;
+  --gray: #64748b;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --white: #ffffff;
 }
 
 * {
