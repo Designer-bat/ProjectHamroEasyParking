@@ -1,9 +1,5 @@
 <?php
 
-// Enable error display for development
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 $message = '';
 
@@ -69,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+include("auth_check.php"); // session and auth check
 include ("Aiindex.php");
 ?>
 

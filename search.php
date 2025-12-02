@@ -122,7 +122,7 @@ if (!empty($_GET['q'])) {
         <h3 class="mb-4 text-center">🔍 Search Parking Entries</h3>
         <form method="GET" class="d-flex">
             <input type="text" name="q" value="<?= htmlspecialchars($query_text) ?>"
-                   class="form-control me-2" placeholder="Search vehicle, owner, slot..." required>
+                   class="form-control me-2" placeholder="Search vehicle names..." required>
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
     </div>

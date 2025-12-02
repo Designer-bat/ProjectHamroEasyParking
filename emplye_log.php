@@ -1,4 +1,6 @@
 <?php
+
+include("auth_check.php"); // session and auth check
 include ("Aiindex.php");
 $conn = new mysqli("localhost", "root", "", "employee_log");
 

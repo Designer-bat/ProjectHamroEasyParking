@@ -1,5 +1,6 @@
 <?php
 include("Aiindex.php");
+include("auth_check.php"); // session and auth check
 // Database connection
 $conn = new mysqli("localhost", "root", "", "parking_system");
 if ($conn->connect_error) {

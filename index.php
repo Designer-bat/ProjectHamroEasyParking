@@ -1,6 +1,6 @@
 <?php
-session_start();
 
+include("auth_check.php"); // session and auth check
 // If admin session not present -> send to login
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: admin_login.php");
