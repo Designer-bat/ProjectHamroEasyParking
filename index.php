@@ -581,7 +581,6 @@ function usageToColor($use, $minUse, $maxUse) {
         <li><a href="parking_exit.php"><span class="icon"><i class="fas fa-sign-out-alt"></i></span> Vehicle Exit</a></li>
         <li><a href="parking_history_delete.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete History</a></li>
         <li><a href="Delete_old_slot.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete Parking Slot</a></li>
-        <li><a href="emplye_log.php"><span class="icon"><i class="fas fa-plus-circle"></i></span>Employee log</a></li>
        
 
     </ul>

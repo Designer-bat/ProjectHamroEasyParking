@@ -1,5 +1,4 @@
 <?php
-include("auth_check.php"); // session and auth check
 
 include ("Aiindex.php");
 // Database connection

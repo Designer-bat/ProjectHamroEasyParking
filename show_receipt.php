@@ -1,6 +1,5 @@
 <?php
 include ("Aiindex.php");
-session_start();
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 include 'config_secure.php'; // 🔐 encryption/decryption functions
 

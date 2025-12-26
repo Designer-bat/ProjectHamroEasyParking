@@ -1,9 +1,7 @@
 <?php
 
 include ("Aiindex.php");
-include ("auth_check.php"); // session and auth check
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
-include 'auth_check.php'; // session and auth check
 include 'config_secure.php'; // encryption/decryption functions
 
 if ($conn->connect_error) {

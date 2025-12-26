@@ -1,6 +1,4 @@
 <?php
-      session_start();
-include("auth_check.php"); // session and auth check
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 include 'config_secure.php'; // 🔐 include encryption/decryption functions
 

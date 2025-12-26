@@ -1,5 +1,4 @@
 <?php
-include("auth_check.php"); // session and auth check
 // ====================== CONFIGURATION ======================
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');

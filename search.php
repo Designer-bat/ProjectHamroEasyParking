@@ -1,6 +1,5 @@
 <?php
 include 'Aiindex.php';
-include 'auth_check.php'; // session and auth check
 
 // Enable errors for development
 ini_set('display_errors', 1);
