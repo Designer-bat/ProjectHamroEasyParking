@@ -68,13 +68,16 @@ $startDate = $labels[0];
 $endDate   = end($labels);
 
 // Income by day (based on exit_time)
-$qIncome = $conn->query("
+$stmt = $conn->prepare("
     SELECT DATE(exit_time) AS d, SUM(charges) AS income
     FROM vehicles
     WHERE exit_time IS NOT NULL
-      AND DATE(exit_time) BETWEEN '$startDate' AND '$endDate'
+      AND DATE(exit_time) BETWEEN ? AND ?
     GROUP BY DATE(exit_time)
 ");
+$stmt->bind_param("ss", $startDate, $endDate);
+$stmt->execute();
+$qIncome = $stmt->get_result();
 if ($qIncome) {
     while ($r = $qIncome->fetch_assoc()) {
         $day = $r['d'];
@@ -83,12 +86,15 @@ if ($qIncome) {
 }
 
 // Entries by day (based on entry_time)
-$qEntries = $conn->query("
+$stmt2 = $conn->prepare("
     SELECT DATE(entry_time) AS d, COUNT(*) AS c
     FROM vehicles
-    WHERE DATE(entry_time) BETWEEN '$startDate' AND '$endDate'
+    WHERE DATE(entry_time) BETWEEN ? AND ?
     GROUP BY DATE(entry_time)
 ");
+$stmt2->bind_param("ss", $startDate, $endDate);
+$stmt2->execute();
+$qEntries = $stmt2->get_result();
 if ($qEntries) {
     while ($r = $qEntries->fetch_assoc()) {
         $day = $r['d'];
@@ -581,8 +587,6 @@ function usageToColor($use, $minUse, $maxUse) {
         <li><a href="parking_exit.php"><span class="icon"><i class="fas fa-sign-out-alt"></i></span> Vehicle Exit</a></li>
         <li><a href="parking_history_delete.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete History</a></li>
         <li><a href="Delete_old_slot.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete Parking Slot</a></li>
-       
-
     </ul>
     <a href="logout.php" class="btn btn-primary">Logout</a>
 </div>
@@ -674,7 +678,10 @@ function usageToColor($use, $minUse, $maxUse) {
         <!-- Parking Slot Status -->
         <h5 class="mt-4 mb-3">Parking Slot Status</h5>
         <div class="glass-table-container">
-            <?php if ($slots): while($row = $slots->fetch_assoc()) { ?>
+            <?php if ($slots): 
+            // Reset the result pointer to the beginning
+            $slots->data_seek(0);
+            while($row = $slots->fetch_assoc()) { ?>
             <div class="slot-card">
                 <div class="slot-header">
                     <div><strong><?= htmlspecialchars($row['slot_name']) ?></strong></div>
@@ -1009,7 +1016,6 @@ new Chart(document.getElementById('entriesChart').getContext('2d'), {
 })();
 
 <?php
-session_start();
 
 // Timeout duration
 $timeout_duration = 600; // 30 minutes

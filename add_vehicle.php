@@ -245,29 +245,12 @@ label.form-label {
   .d-flex { flex-direction: column-reverse; gap: 10px; }
   .btn { width: 100%; }
 }
-
-/* Entrance animation */
 @keyframes enterUp {
-  from { transform: translateY(18px); opacity: 0; filter: blur(6px); }
-  to   { transform: translateY(0); opacity: 1; filter: blur(0); }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
-
-/* Subtle floating shadow for card (infinite slow) */
-@keyframes floatShadow {
-  0% { box-shadow: var(--shadow-2); transform: translateY(0); }
-  50% { box-shadow: 0 28px 60px rgba(2,6,23,0.08); transform: translateY(-3px); }
-  100% { box-shadow: var(--shadow-2); transform: translateY(0); }
-}
-.form-container { animation: enterUp 520ms cubic-bezier(.2,.9,.2,1) forwards, floatShadow 8s ease-in-out infinite; opacity: 1; }
-
-/* Small shake for invalid fields when attempting submit - will activate by adding 'shake' to the input's parent in JS if desired */
-@keyframes shake {
-  10%, 90% { transform: translateX(-1px); }
-  20%, 80% { transform: translateX(2px); }
-  30%, 50%, 70% { transform: translateX(-4px); }
-  40%, 60% { transform: translateX(4px); }
-}
-.form-control.shake { animation: shake 420ms cubic-bezier(.36,.07,.19,.97); border-color: var(--danger-red); }
 
 /* Tiny accessibility improvement */
 .form-control:focus-visible {
