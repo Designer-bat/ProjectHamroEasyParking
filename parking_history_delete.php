@@ -7,11 +7,27 @@ define('DB_NAME', 'parking_system');
 define('CHARGE_RATE_PER_HOUR', 10);
 define('CURRENCY_SYMBOL', '₹');
 
+define('ENCRYPTION_KEY', 'your-32-char-secret-key-1234567890abcd');
+define('ENCRYPTION_METHOD', 'AES-256-CBC');
+
 // ====================== DB CONNECTION ======================
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 if ($conn->connect_error) {
     error_log("Connection failed: " . $conn->connect_error);
     die("Database connection error. Please try again later.");
+}
+
+// ====================== ENCRYPTION / DECRYPTION FUNCTIONS ======================
+function encryptData($data) {
+    $key = hash('sha256', ENCRYPTION_KEY);
+    $iv = substr(hash('sha256', 'iv_secret'), 0, 16); // fixed IV
+    return openssl_encrypt($data, ENCRYPTION_METHOD, $key, 0, $iv);
+}
+
+function decryptData($encryptedData) {
+    $key = hash('sha256', ENCRYPTION_KEY);
+    $iv = substr(hash('sha256', 'iv_secret'), 0, 16);
+    return openssl_decrypt($encryptedData, ENCRYPTION_METHOD, $key, 0, $iv);
 }
 
 // ====================== PROCESS EXIT ACTION ======================
@@ -50,7 +66,7 @@ if (isset($_POST['exit']) && ctype_digit($_POST['exit'])) {
     } catch (Exception $e) {
         $conn->rollback();
         error_log("Transaction failed: " . $e->getMessage());
-        header("Location: parking_history_delete.php");
+        header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
 }
@@ -73,6 +89,8 @@ $vehicles = $stmt->get_result();
 
 include ("Aiindex.php");
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,233 +98,213 @@ include ("Aiindex.php");
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vehicle Parked Records</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-/* ====================== GLOBAL STYLE ====================== */
 body {
-  background: var(--body-bg);
-  font-family: 'Poppins', 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 40px 20px;
-  color: #333;
-  min-height: 100vh;  
+    background: #f1f5f9;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
 }
 
-/* ====================== CONTAINER ====================== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  padding: 30px 40px;
-  animation: fadeIn 0.6s ease-in-out;
+.card {
+  
+    width: 1400px;        /* 25cm in px */
+    height: 600px;       /* auto height for multiple notifications */
+    background: #fff;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    margin-left: 250px; /* move card to the right */
+    margin-right: 0;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Card Header */
+.card-header {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 25px;
+}
+.card-header i {
+    font-size: 26px;
+    color: #2563eb;
+    background-color: #e0e7ff;
+    padding: 10px;
+    border-radius: 10px;
+}
+.card-header h2 {
+    margin: 0;
+    color: #1e293b;
+}
+.card-header p {
+    margin: 2px 0 0 0;
+    color: #6b7280;
+    font-size: 0.95rem;
 }
 
-/* ====================== HEADINGS ====================== */
-h2 {
-  font-size: 1.8rem;
-  color: #1e3a8a;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2 i {
-  background-color: #e0e7ff;
-  color: #1e3a8a;
-  padding: 10px;
-  border-radius: 10px;
-}
-p {
-  color: #6b7280;
-  font-size: 0.95rem;
-  margin-bottom: 25px;
+/* Notification list */
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-/* ====================== TABLE ====================== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #ffffff;
+/* Notification Card */
+.notification-card {
+    background: #f9fafb;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.25s ease;
+}
+.notification-card:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
 }
 
-thead {
-  background-color: #2563eb;
-  color: #ffffff;
+.notif-left {
+    display: flex;
+    gap: 14px;
+    align-items: center;
 }
 
-th, td {
-  padding: 14px 18px;
-  text-align: left;
-  font-size: 0.9rem;
-  border-bottom: 1px solid #e5e7eb;
+.notif-icon {
+    width: 45px;
+    height: 45px;
+    background: #2563eb;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-tbody tr:hover {
-  background-color: #f9fafb;
-  transition: background 0.3s ease;
+.notif-details h4 {
+    margin: 0;
+    font-size: 15px;
+    color: #1e293b;
+}
+.notif-details p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #6b7280;
 }
 
-/* ====================== STATUS BADGE ====================== */
+.notif-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Status badges */
 .status-badge {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 500;
-  font-size: 0.85rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
-.status-in-lot {
-  background-color: rgba(34,197,94,0.15);
-  color: #22c55e;
-}
-.status-exited {
-  background-color: rgba(107,114,128,0.15);
-  color: #6b7280;
-}
+.status-in-lot { background-color: rgba(34,197,94,0.15); color: #16a34a; }
+.status-exited { background-color: rgba(100,116,139,0.15); color: #475569; }
 
-/* ====================== BUTTONS ====================== */
-.delete-btn {
-  background-color: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+/* Buttons */
+.exit-btn, .delete-btn, .receipt-btn {
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
 }
-.delete-btn:hover {
-  background-color: #dc2626;
-  transform: scale(1.05);
-}
-
-.exit-btn {
-  background-color: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin-right: 5px;
-  transition: all 0.2s ease;
-}
-.exit-btn:hover {
-  background-color: #1d4ed8;
-  transform: scale(1.05);
-}
+.delete-btn { background-color: #ef4444; }
+.exit-btn:hover { background-color: #1d4ed8; }
+.delete-btn:hover { background-color: #dc2626; }
+.receipt-btn:hover { background-color: #1d4ed8; }
 
 .btn-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #2563eb;
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  text-decoration: none;
-  margin-top: 20px;
-  transition: all 0.3s ease;
-}
-.btn-back:hover {
-  background-color: #1957adff;
-  transform: translateY(-2px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #2563eb;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    text-decoration: none;
+    margin-top: 20px;
 }
 
-/* ====================== EMPTY STATE ====================== */
-.empty-state {
-  text-align: center;
-  padding: 60px 0;
-  color: #6b7280;
-}
-.empty-state i {
-  font-size: 2.5rem;
-  color: #9ca3af;
-  margin-bottom: 10px;
-}
+/* Empty state */
+.empty-state { text-align: center; padding: 60px 0; color: #6b7280; }
+.empty-state i { font-size: 2rem; margin-bottom: 10px; }
 
-/* ====================== RESPONSIVE ====================== */
+/* Responsive */
 @media (max-width: 768px) {
-  body { padding: 20px 10px; }
-  th, td { font-size: 0.85rem; padding: 10px; }
-  .container { padding: 20px; }
+    .card { width: 95%; padding: 20px; }
+    .notif-right { flex-wrap: wrap; gap: 5px; }
 }
 </style>
 </head>
+
 <body>
-<div class="container">
-  <h2><i class="fas fa-car"></i> Records and History</h2>
-  <p>History of parked in the facility</p>
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-car"></i>
+        <div>
+            <h2>Vehicle Activity</h2>
+            <p>Parking notifications & history</p>
+        </div>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Vehicle No</th>
-        <th>Owner Name</th>
-        <th>Entry Time</th>
-        <th>Exit Time</th>
-        <th>Duration</th>
-        <th>Charges</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php if ($vehicles && $vehicles->num_rows > 0): ?>
-        <?php while($row = $vehicles->fetch_assoc()): ?>
-          <tr>
-            <td>
-              <?= (preg_match('/^[A-Za-z0-9+\/=]+$/', $row['vehicle_no']) && strlen($row['vehicle_no']) > 20)
-                  ? 'Hidden Content'
-                  : htmlspecialchars($row['vehicle_no']); ?>
-            </td>
-            <td>
-              <?= (preg_match('/^[A-Za-z0-9+\/=]+$/', $row['owner_name']) && strlen($row['owner_name']) > 20)
-                  ? 'Hidden Content'
-                  : htmlspecialchars($row['owner_name']); ?>
-            </td>
-            <td><?= !empty($row['entry_time']) ? date('M d, Y H:i', strtotime($row['entry_time'])) : '-' ?></td>
-            <td><?= !empty($row['exit_time']) ? date('M d, Y H:i', strtotime($row['exit_time'])) : '-' ?></td>
-            <td><?= !empty($row['duration']) ? $row['duration'].' hr' : '-' ?></td>
-            <td><?= !empty($row['charges']) ? CURRENCY_SYMBOL.$row['charges'] : '-' ?></td>
-            <td>
-              <?php if ($row['status'] === 'In Lot'): ?>
-                <span class="status-badge status-in-lot"><i class="fas fa-car"></i> In Lot</span>
-              <?php else: ?>
-                <span class="status-badge status-exited"><i class="fas fa-check-circle"></i> Exited</span>
-              <?php endif; ?>
-            </td>
-            <td>
-              <?php if ($row['status'] === 'In Lot'): ?>
-                <form method="POST" style="display:inline;">
-                  <input type="hidden" name="exit" value="<?= $row['vehicle_id']; ?>">
-                  <button type="submit" class="exit-btn"><i class="fas fa-sign-out-alt"></i></button>
-                </form>
-              <?php endif; ?>
-              <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this record?');">
-                <input type="hidden" name="delete_id" value="<?= $row['vehicle_id']; ?>">
-                <button type="submit" class="delete-btn"><i class="fas fa-trash-alt"></i></button>
-              </form>
-            </td>
-          </tr>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <tr><td colspan="8" class="empty-state"><i class="fas fa-info-circle"></i><br>No Parking Records Found</td></tr>
-      <?php endif; ?>
-    </tbody>
-  </table>
+    <div class="notification-list">
+        <?php if ($vehicles && $vehicles->num_rows > 0): ?>
+            <?php while($row = $vehicles->fetch_assoc()): ?>
+                <div class="notification-card">
+                    <div class="notif-left">
+                        <div class="notif-icon"><i class="fas fa-car"></i></div>
+                        <div class="notif-details">
+                            <h4><?= htmlspecialchars($row['vehicle_no']) ?></h4>
+                            <p><?= htmlspecialchars(decryptData($row['owner_name'])) ?> • <?= date('M d, Y H:i', strtotime($row['entry_time'])) ?></p>
+                        </div>
 
-  <a href="index.php" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                    </div>
+                    
+                    <div class="notif-right">
+                        <span class="status-badge <?= $row['status'] === 'In Lot' ? 'status-in-lot' : 'status-exited' ?>">
+                            <?= $row['status'] ?>
+                        </span>
+
+                        <?php if ($row['status'] === 'In Lot'): ?>
+                            <form method="POST" style="margin:0;">
+                                <input type="hidden" name="exit" value="<?= $row['vehicle_id']; ?>">
+                                <button type="submit" class="exit-btn"><i class="fas fa-sign-out-alt"></i></button>
+                            </form>
+                        <?php endif; ?>
+
+                        <form method="POST" style="margin:0;">
+                            <input type="hidden" name="delete_id" value="<?= $row['vehicle_id']; ?>">
+                            <button type="submit" class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                        </form>
+
+                        <a href="?receipt=<?= $row['vehicle_id']; ?>" class="receipt-btn"><i class="fas fa-file-invoice"></i></a>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <div class="empty-state">
+                <i class="fas fa-info-circle"></i><br>No Parking Records Found
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
 </body>
 </html>

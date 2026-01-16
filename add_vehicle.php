@@ -1,5 +1,4 @@
 <?php
-
 $conn = new mysqli('localhost', 'root', '', 'parking_system');
 $message = '';
 
@@ -7,19 +6,19 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Include encryption + hashing functions
+// Include encryption functions
 require_once 'config_secure.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Raw user inputs
+    // Raw inputs
     $vehicle_no_raw = trim($_POST['vehicle_no']);
     $owner_name_raw = trim($_POST['owner_name']);
     $vehicle_type   = trim($conn->real_escape_string($_POST['vehicle_type']));
-    $duration_hours = intval($_POST['duration_hours']); 
+    $duration_hours = intval($_POST['duration_hours']);
     $entry_time     = date('Y-m-d H:i:s');
     $exit_time      = date('Y-m-d H:i:s', strtotime("+$duration_hours hours", strtotime($entry_time)));
 
-    // 🔹 Backend Validation
+    // Validation
     if (!preg_match("/^[A-Z]{2}-[0-9]{1,2}-[A-Z]{1,2}-[0-9]{3,4}$/", $vehicle_no_raw)) {
         $message = "Invalid vehicle number format. Example: BA-2-PA-1234";
     } elseif (!preg_match("/^[a-zA-Z\s]{3,50}$/", $owner_name_raw)) {
@@ -27,13 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($duration_hours < 1 || $duration_hours > 24) {
         $message = "Parking duration must be between 1 and 24 hours.";
     } else {
-        // Encrypt vehicle number (two-way)
-        $vehicle_no = encryptVehicleNo($vehicle_no_raw);
-
-        // Hash owner name (one-way)
-        $owner_name = encryptOwnerName($owner_name_raw);
-
-        // Greedy Algorithm: Pick the first available slot
+        // Pick first available slot
         $slotQuery = $conn->query("SELECT slot_id, slot_name FROM parking_slots WHERE status = 'Available' ORDER BY slot_id ASC LIMIT 1");
 
         if ($slotQuery->num_rows > 0) {
@@ -41,20 +34,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slot_id  = $slotData['slot_id'];
             $slot_name = $slotData['slot_name'];
 
-            // Insert vehicle data
+            // Encrypt data
+            $vehicle_no = encryptVehicleNo($vehicle_no_raw);
+            $owner_name = encryptOwnerName($owner_name_raw);
+
+            // Insert into vehicles
             $insert = $conn->prepare("INSERT INTO vehicles (vehicle_no, owner_name, vehicle_type, entry_time, exit_time, slot_id, duration_hours, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'In Lot')");
             $insert->bind_param("sssssis", $vehicle_no, $owner_name, $vehicle_type, $entry_time, $exit_time, $slot_id, $duration_hours);
 
             if ($insert->execute()) {
                 $insert->close();
 
-                // Update slot status to 'Occupied'
+                // Update slot status
                 $update = $conn->prepare("UPDATE parking_slots SET status = 'Occupied' WHERE slot_id = ?");
                 $update->bind_param("i", $slot_id);
                 $update->execute();
                 $update->close();
 
-                // Redirect
+                // Redirect success
                 header("Location: index.php?success=" . urlencode("Vehicle added to slot $slot_name for $duration_hours hour(s). Exit time: $exit_time"));
                 exit;
             } else {
@@ -65,7 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
 include ("Aiindex.php");
+?>
+
 ?>
 
 <!DOCTYPE html>

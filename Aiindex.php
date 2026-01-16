@@ -536,16 +536,16 @@ if ($conn->connect_error) {
     setInterval(updateClock, 1000);
   </script>
     <ul class="nav-menu">
-        <li><a href="search.php"><span class="icon"><i class="fas fa-search"></i></span> Search</a></li>
         <li><a href="index.php"><span class="icon"><i class="fas fa-tachometer-alt"></i></span> Dashboard</a></li>
+        <li><a href="user.php"><span class="icon"><i class="fas fa-user"></i></span> User Management</a></li>
+        <li><a href="search.php"><span class="icon"><i class="fas fa-search"></i></span> Search</a></li>
         <li><a href="add_new_slot.php"><span class="icon"><i class="fas fa-car"></i></span> Add Parking Slot</a></li>
         <li><a href="add_vehicle.php"><span class="icon"><i class="fas fa-plus-circle"></i></span> Add Vehicle Entry</a></li>
         <li><a href="parking_parked.php"><span class="icon"><i class="fas fa-parking"></i></span> Vehicle Parked</a></li>
-        <li><a href="parking_history.php"><span class="icon"><i class="fas fa-file-alt"></i></span> Parking Records</a></li>
-        <li><a href="show_receipt.php"><span class="icon"><i class="fas fa-receipt"></i></span> Receipt</a></li>
-        <li><a href="parking_exit.php"><span class="icon"><i class="fas fa-sign-out-alt"></i></span> Vehicle Exit</a></li>
         <li><a href="parking_history_delete.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete History</a></li>
         <li><a href="Delete_old_slot.php"><span class="icon"><i class="fas fa-trash-alt"></i></span> Delete Parking Slot</a></li>
+        <li><a href="payment.php"><span class="icon"><i class="fas fa-money-bill-wave"></i></span> Payment</a></li>
+        <li><a href="receipt.php"><span class="icon"><i class="fas fa-receipt"></i></span> Receipt</a></li>
 
     </ul>
     <a href="logout.php" class="btn btn-primary">Logout</a>

@@ -65,19 +65,22 @@ if (!empty($_GET['q'])) {
             background: #eef2f7;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         .search-card {
-            width: 1000px;
+            width: 1400px;
             height: 200px;
-            margin-top: 50px;
-            padding: 30px;
-            border-radius: 12px;
             background: #fff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            margin-left: 250px; /* move card to the right */
+            margin-right: 0;
         
         }
         .table-container {
-            width: 1000px;
-            height: 200px;
+            width: 1400px;
+            height: 500px;
+            margin-left: 250px; /* move table to the right */
+            margin-right: 0;
             margin-top: 50px;
             margin-top: 30px;
             background: #fff;
@@ -164,8 +167,6 @@ if (!empty($_GET['q'])) {
             </table>
         </div>
     <?php endif; ?>
-
-    <a href="index.php" class="btn-back">← Back to Dashboard</a>
 </div>
 
 </body>
